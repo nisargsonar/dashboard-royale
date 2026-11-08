@@ -16,6 +16,11 @@ Charts load Chart.js from cdnjs, so an internet connection is needed.
 - **Deep links skip the story** (e.g. `index.html#plan`). To force it, add `?story` or jump to a scene with `?scene=4`.
 - Story numbers come from `data.js` through `window.GA` (see `story.js`). Animations switch off when the viewer's system asks for reduced motion.
 
+## Submission materials
+- `appendix.html`: Claims and Evidence appendix + AI-use disclosure (public page next to the dashboard).
+- `../submission/writeup.md`: the 400-word write-up.
+- `../submission/video-script.md`: the 2-minute video script.
+
 ## Rebuild the data
 From the repository root:
 

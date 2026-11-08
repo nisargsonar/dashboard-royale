@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luck or Leak: Claims and Evidence</title>
+<meta name="description" content="Claims and Evidence appendix and AI-use disclosure for the Luck or Leak dashboard (TAMU Datathon 2026, Dashboard Royale).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme: light; --page: #eeebe6; --card: #ffffff; --ink: #1c1a19; --ink2: #4d4a47; --muted: #736d66; --line: #ddd5c8; --maroon: #500000; --maroon-ui: #6b0f1a; --soft: #f3e4e3; --track: #e7dfd3; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --page: #1c1817; --card: #282321; --ink: #f2efec; --ink2: #cfc8c1; --muted: #9a928a; --line: #3b3431; --maroon-ui: #e8909b; --soft: #3b2427; --track: #37302d; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.6 "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+.top { background: linear-gradient(90deg, #500000, #732f2f); color: #fff; }
+.top .in { max-width: 1100px; margin: 0 auto; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.top b { font-family: "Oswald", sans-serif; font-size: 20px; font-weight: 600; }
+.top a { color: #fff; font-size: 13px; font-weight: 600; border: 1px solid rgba(255,255,255,.45); border-radius: 7px; padding: 6px 12px; text-decoration: none; }
+main { max-width: 1100px; margin: 0 auto; padding: 24px 18px 50px; }
+h1, h2, h3 { font-family: "Oswald", "Open Sans", sans-serif; font-weight: 600; }
+h1 { font-size: clamp(26px, 4vw, 36px); margin: 0 0 6px; }
+h2 { font-size: 22px; margin: 34px 0 10px; }
+.lede { color: var(--ink2); max-width: 820px; margin: 0 0 8px; }
+.card { background: var(--card); border-radius: 10px; padding: 16px 18px; margin: 0 0 14px; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 1px 8px rgba(0,0,0,.04); }
+.claim h3 { font-size: 18px; margin: 0 0 10px; }
+.claim h3 span { color: var(--maroon-ui); margin-right: 6px; }
+.grid { display: grid; grid-template-columns: 170px 1fr; gap: 6px 14px; font-size: 14px; }
+.grid dt { font-weight: 700; color: var(--ink2); }
+.grid dd { margin: 0; }
+code { font-size: 12.5px; background: var(--track); padding: 1px 5px; border-radius: 3px; white-space: pre-wrap; word-break: break-word; }
+.link { font-size: 13px; font-weight: 700; color: var(--maroon-ui); }
+ul { padding-left: 20px; } li { margin: 4px 0; }
+.note { background: var(--soft); border-radius: 8px; padding: 10px 14px; font-size: 14px; }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr; } .grid dt { margin-top: 6px; } }
+@media print { .top a { display: none; } body { background: #fff; } .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; } }
+</style>
+</head>
+<body>
+<header class="top"><div class="in"><b>Luck or Leak · Claims and Evidence</b><a href="index.html#overview">← Back to the dashboard</a></div></header>
+<main>
+<h1>Claims and Evidence appendix</h1>
+<p class="lede">Each claim on the dashboard, with the table and query behind it, the result, the alternative explanation we tested or considered, and its limitation. All numbers come from <code>analysis/build_dashboard_data.py</code> run on data release 0.9.0-draft (gaming dates Jan 1 to Jun 30, 2025). The Gilded Ace is fictional and its data is synthetic.</p>
+<p class="note">Shared rules for every query: only machine-days with <code>active = true</code>; all ratios are ratios of sums; money in dollars (cents ÷ 100); location taken from the placement at the start of each gaming day; theo = Σ bet × (1 − configured RTP).</p>
+
+<h2>Machines (Question 1)</h2>
+
+<div class="card claim"><h3><span>C1</span>The floor as a whole earned what the game math predicts.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>machine_day</code>: <code>SUM(house_win_cents)</code> vs. <code>SUM(theo_cents)</code> where active.</dd>
+<dt>Result</dt><dd>House win $23.64M vs. theo $23.55M (luck +$92.8k, +0.4%). Hold 9.50% vs. designed 9.46%.</dd>
+<dt>Alternative explanation</dt><dd>Floor-level luck could hide machine-level problems that cancel out. We therefore tested every machine separately (C3, C4).</dd>
+<dt>Limitation</dt><dd>One six-month period; supplied costs are partial (no rent, tax or depreciation).</dd>
+</dl><a class="link" href="index.html#overview">See it on the dashboard →</a></div>
+
+<div class="card claim"><h3><span>C2</span>9 of management's 10 lowest earners sit in Back Forty, where the same games earn 30–45% less per working hour.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>machine_day</code> + <code>game_math</code> + <code>floor_locations</code> (slot → bank → zone): <code>SUM(theo) / SUM(available_seconds/3600)</code> by zone × theme. Bottom 10 = lowest <code>SUM(house_win_cents)</code>, Jan to Jun.</dd>
+<dt>Result</dt><dd>Desert Gold: $11.10/hr in Back Forty vs. $16.06–$20.35 elsewhere. Royal Draw: $6.92 vs. $9.22–$12.20. Comet Cash: $7.86 vs. $11.98–$14.24.</dd>
+<dt>Alternative explanation</dt><dd>Game mix: Back Forty might simply hold weaker games. Ruled out by comparing the <b>same</b> game across zones. Low availability: ruled out (C6).</dd>
+<dt>Limitation</dt><dd>Machines are not randomly placed, so location is strongly associated with lower demand but not proven to cause it.</dd>
+</dl><a class="link" href="index.html#floor">See it on the dashboard →</a></div>
+
+<div class="card claim"><h3><span>C3</span>Luck explains the spread of machine results; only one machine falls outside chance.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>machine_day</code> + <code>game_math</code>: luck z = (Σ house win − Σ theo) ÷ √Σ(<code>sum_bet_squared</code> × <code>payout_multiplier_variance</code>).</dd>
+<dt>Result</dt><dd>Across 310 machines the z-scores follow a standard normal shape. 1 machine has |z| ≥ 3 (≈0.8 expected by chance). Luck simulator agrees with z for ordinary machines (e.g. M-1181: simulated p 0.012 vs. normal 0.008; M-1288 jackpot game: 0.013 vs. 0.012).</dd>
+<dt>Alternative explanation</dt><dd>The z formula assumes a bell curve, which may fail for high-volatility games. Checked with a Monte Carlo simulator that matches each game's RTP, variance and hit rate; results agree.</dd>
+<dt>Limitation</dt><dd>Independent spins assumed; the simulator uses a 3-point payout model, not the full paytable.</dd>
+</dl><a class="link" href="index.html#machines">See it on the dashboard →</a></div>
+
+<div class="card claim"><h3><span>C4</span>M-1158 behaves differently from its game design and should be inspected.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>machine_day</code> for M-1158: <code>SUM(payout_positive_spins)/SUM(paid_spins)</code>, hold by month; spec from <code>game_math.hit_probability</code>.</dd>
+<dt>Result</dt><dd>Hit rate 38.57% vs. spec 31.54% over 674,454 spins (hit-rate z ≈ 124), every month. Hold 3.04% vs. designed 10%: $36.2k below theo, luck z −4.57. 0 of 1,000 simulated fair replays were as low; simulated hit rate stayed within 31.4–31.7%. Availability 99.9%.</dd>
+<dt>Alternative explanation</dt><dd>A legitimate paytable/configuration change not reflected in <code>game_math</code>, a meter or data-recording error, or a very rare run of luck. Luck is effectively ruled out; the others are exactly what an inspection checks. This is not an accusation of wrongdoing.</dd>
+<dt>Limitation</dt><dd>The data cannot show the cause; only a physical inspection can.</dd>
+</dl><a class="link" href="index.html#machines">See it on the dashboard →</a></div>
+
+<div class="card claim"><h3><span>C5</span>Two of the 10 (M-5076, M-1118) are too new to judge.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>machine_day</code>: count of active days; theo per available hour.</dd>
+<dt>Result</dt><dd>M-5076: 49 days; M-1118: 55 days of 181. M-1118 earns $19.28 expected per working hour, above the floor average.</dd>
+<dt>Alternative explanation</dt><dd>New machines may have a novelty bump or a slow start; neither changes the fact that their totals reflect fewer days.</dd>
+<dt>Limitation</dt><dd>Short history gives wider uncertainty for these two.</dd>
+</dl><a class="link" href="index.html#machines">See it on the dashboard →</a></div>
+
+<div class="card claim"><h3><span>C6</span>Downtime did not cause the bottom 10's low earnings.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>machine_day</code>: <code>SUM(available_seconds)/SUM(scheduled_seconds)</code> per machine.</dd>
+<dt>Result</dt><dd>All 10 were available more than 99.5% of scheduled time.</dd>
+<dt>Alternative explanation</dt><dd>Short outages at peak hours could matter more than their share of time; peak-hour pricing in C8 shows the total effect is small.</dd>
+<dt>Limitation</dt><dd>Availability is as recorded by the meters.</dd>
+</dl><a class="link" href="index.html#machines">See it on the dashboard →</a></div>
+
+<h2>Demand (Question 2)</h2>
+
+<div class="card claim"><h3><span>C7</span>The walkway closure (Mar 3 to Apr 7) cut Back Forty foot traffic about 30%, and only about 90% returned.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>zone_traffic_hourly</code> mapped to gaming dates via <code>calendar_day</code>; entries ÷ coverage minutes × 1,440 (offline hours excluded, not zero). Closure dates from <code>floor_walkways</code> (W-ENT-B40).</dd>
+<dt>Result</dt><dd>Back Forty: 604 → 423 → 546 entries per working sensor-day (before / during / after). Other zones were flat or up during the closure (e.g. Center Pit 4,167 → 4,404).</dd>
+<dt>Alternative explanation</dt><dd>Seasonality or a floor-wide slump. Ruled out for the closure window because other zones did not fall. The incomplete recovery may partly reflect the citywide June dip (other zones also dipped about 3–5%).</dd>
+<dt>Limitation</dt><dd>Counters measure crossings, not unique people; seated players are not counted.</dd>
+</dl><a class="link" href="index.html#floor">See it on the dashboard →</a></div>
+
+<div class="card claim"><h3><span>C8</span>Sports weekends, a festival and our own tournament lifted demand 15–23%; conventions barely did.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>machine_day</code> daily coin-in vs. the mean of the same weekday on non-event days; <code>events</code> for dates.</dd>
+<dt>Result</dt><dd>Super Bowl weekend +23%, college basketball +19%, Winter Slot Tournament +18% (+$842k bet, ≈$79.6k theo), EDC +16%; NAB +6%, Locals Week +5%, CinemaCon +3%, CES +2%.</dd>
+<dt>Alternative explanation</dt><dd>Events overlapping weekends or holidays; handled by comparing with the same weekday.</dd>
+<dt>Limitation</dt><dd>One occurrence per event; small samples; promotion prize costs are not in the data.</dd>
+</dl><a class="link" href="index.html#floor">See it on the dashboard →</a></div>
+
+<h2>Downtime (Question 3)</h2>
+
+<div class="card claim"><h3><span>C9</span>Downtime cost about $99k of expected earnings (0.42%); Ridgeline machines cause most of it.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>machine_hour</code>: unavailable seconds × the machine's coin-in per available second at that local hour × its theo hold. <code>operations</code> (fault_repair) for fault counts.</dd>
+<dt>Result</dt><dd>5,021 machine-hours down; $98.9k lost theo. Ridgeline $54.2k, Northwind $24.8k, Halcyon $19.9k. Ridgeline faults about 3.6× as often per machine-day as Halcyon.</dd>
+<dt>Alternative explanation</dt><dd>Ridgeline machines could sit in busier zones (raising lost value) rather than being less reliable; the fault-rate comparison per machine-day addresses reliability directly.</dd>
+<dt>Limitation</dt><dd>Lost play is an estimate using average hourly demand; repair parts and labour are separate costs.</dd>
+</dl><a class="link" href="index.html#downtime">See it on the dashboard →</a></div>
+
+<div class="card claim"><h3><span>C10</span>Repairs wait longest when no technician is on shift.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>operations</code> (work_started − opened) joined to <code>shift_roster</code> actual slot-tech headcount by gaming date and shift.</dd>
+<dt>Result</dt><dd>Average wait 4.9 h with 0 techs, 1.8 h with 1, 0.55 h with 2. Day shift had 12 days without a tech in April and May.</dd>
+<dt>Alternative explanation</dt><dd>Zero-tech days might coincide with other disruptions.</dd>
+<dt>Limitation</dt><dd>Only 22 faults occurred with zero techs on shift.</dd>
+</dl><a class="link" href="index.html#downtime">See it on the dashboard →</a></div>
+
+<h2>Players and comps (Questions 4 and 5)</h2>
+
+<div class="card claim"><h3><span>C11</span>Tracked guests lost about what game math predicts, and losses are concentrated.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>player_period</code>, summed per player over the period (players with carded coin-in &gt; 0).</dd>
+<dt>Result</dt><dd>96,559 players bet $163.8M, got back $148.2M; net −$15.59M vs. theo −$15.49M. 16.1% finished ahead. Top 1% carry 17.8% of losses; top 10% carry 56%. Locals: 8% of players, 57% of losses.</dd>
+<dt>Alternative explanation</dt><dd>Uncarded guests may behave differently; carded share of coin-in is about 66%.</dd>
+<dt>Limitation</dt><dd>Tracked (loyalty-card) play only; uncarded play is invisible at the person level.</dd>
+</dl><a class="link" href="index.html#players">See it on the dashboard →</a></div>
+
+<div class="card claim"><h3><span>C12</span>On May 1 the points needed per comp dollar were cut about 53% in every tier.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>loyalty_ledger</code> redeem events: <code>SUM(−points_delta) / SUM(face_value_cents/100)</code> by week and tier; economic cost per point before vs. after.</dd>
+<dt>Result</dt><dd>Base 15 → 7, Gold 12 → 5.6, Platinum 9 → 4.2 points per $1. Cost per redeemed point 2.13¢ → 4.84¢ (×2.27). 156M unredeemed points: cost if all redeemed $3.34M → $7.57M. Monthly comp cost moved little ($31k → $33–34k); visits did not rise.</dd>
+<dt>Alternative explanation</dt><dd>An intentional promotion whose visit effect may lag beyond June; this is why we propose a controlled pilot rather than reversing it outright.</dd>
+<dt>Limitation</dt><dd>The full-redemption figure is an upper bound (only 4.4% of earned points were redeemed); balances reset each year.</dd>
+</dl><a class="link" href="index.html#comps">See it on the dashboard →</a></div>
+
+<h2>Model</h2>
+
+<div class="card claim"><h3><span>C13</span>A weekday-plus-events forecast beats a flat-average baseline on a time-based holdout.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>property_day</code> daily coin-in; <code>events</code> with <code>announced_date</code> ≤ forecast date. Train Jan 1 to Apr 30, test May 1 to Jun 30 (61 days). Rolling-origin backtest for Mar, Apr, May, Jun.</dd>
+<dt>Result</dt><dd>MAE per day: flat average $218k, weekday mean $68.7k, weekday + events $46.7k, regression (weekday + events + trend) $65.6k. Chosen on Mar/Apr folds before seeing May/Jun; beats the baseline in 4 of 4 months.</dd>
+<dt>Alternative explanation</dt><dd>May–June might be unusually regular. The four-month backtest shows the gain is consistent; in April, weekday-only edged out the event model.</dd>
+<dt>Limitation</dt><dd>Only four months of training history; no lagged actuals (a frozen 61-day forecast cannot see them); Locals Week excluded as an input because it was announced after Apr 30.</dd>
+</dl><a class="link" href="index.html#forecast">See it on the dashboard →</a></div>
+
+<h2>Recommendation (Question 6)</h2>
+
+<div class="card claim"><h3><span>C14</span>Spend $17,500 on three targeted actions and keep $82,500.</h3><dl class="grid">
+<dt>Table / query</dt><dd><code>action_catalog</code>: cost = qty × (unit + per-day × max(0, 30 − lead days)). Effects from C4, C7 and C12.</dd>
+<dt>Result</dt><dd>Inspect 5 machines $6,000 (up to $5.8k recovered in July if M-1158 is fixed); Back Forty wayfinding $7,500 (≈$10.6k upside, high uncertainty); comp pilot with control group $4,000 (information). Rejected: replacing the bottom 10 ($220k purchase / $33.8k lease), extra technician, Ridgeline maintenance, promotion weekend, moves, floor-wide comp change.</dd>
+<dt>Alternative explanation</dt><dd>A promotion weekend has the largest single upside (≈$80k theo in February) but rests on one example, has unknown prize costs and could only start July 15.</dd>
+<dt>Limitation</dt><dd>Action costs are given; effects are estimates. Measurement plans: hit rate and luck score for M-1158; difference-in-differences on Back Forty traffic and theo per hour; treatment vs. control visits and theo per guest.</dd>
+</dl><a class="link" href="index.html#plan">See it on the dashboard →</a></div>
+
+<h2>AI-use disclosure</h2>
+<div class="card">
+<p><b>Our ideas:</b> the approach (test luck vs. location vs. leak before spending), the decision to keep most of the budget, and the user experience of explaining results to many audiences at once: the animated story intro and the Simple / Analyst views.</p>
+<p><b>Where AI helped:</b> Claude (Anthropic) helped with execution: writing the SQL and Python analysis, fitting and back-testing the forecast models, building the luck simulator and coding the dashboard.</p>
+<p><b>How we verified it:</b></p>
+<ul>
+<li>Recomputed key numbers two independent ways (SQL in DuckDB and the dashboard's JavaScript) and confirmed they match: house win $23.64M, M-1158 luck z −4.57, forecast MAEs.</li>
+<li>Checked money definitions against the dataset guide: house win = coin-in − payout; ratios of sums; off-floor days excluded; cents converted once.</li>
+<li>Sanity checks: luck z-scores across 310 machines form the expected bell curve; an independent Monte Carlo simulator reproduces the z-score p-values for ordinary machines.</li>
+<li>Went through the guide's "common mistakes" table line by line; this found and fixed one real error (a forecast input announced after the forecast date).</li>
+<li>Back-tested the forecast on four months and chose the model before looking at the holdout; tested every filter combination in a browser.</li>
+</ul>
+</div>
+
+<h2>Reproduce</h2>
+<div class="card">
+<p>From the repository root: <code>python -m pip install duckdb pandas numpy</code> then <code>python analysis/build_dashboard_data.py</code>. This rewrites <code>dashboard/data.js</code>; open <code>dashboard/index.html</code>. Code: <a href="https://github.com/nisargsonar/dashboard-royale">github.com/nisargsonar/dashboard-royale</a>.</p>
+</div>
+</main>
+</body>
+</html>

@@ -259,6 +259,24 @@ details.methodwrap > summary { cursor: pointer; font-weight: 700; color: var(--m
 .plainlist { margin: 6px 0 0; padding-left: 18px; font-size: 14px; color: var(--ink2); }
 .plainlist li { margin: 4px 0; }
 .mini code { font-size: 11.5px; }
+
+/* ===== Budget playground ===== */
+.pg-wrap { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 1000px) { .pg-wrap { grid-template-columns: 1fr; } }
+.pg-qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.pg-qty button { width: 28px; height: 28px; border: 0; background: var(--track); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+.pg-qty button:disabled { opacity: .35; cursor: default; }
+.pg-qty span { min-width: 30px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+#tPlay td.note { white-space: normal; min-width: 240px; font-size: 12px; color: var(--ink2); }
+#tPlay tr.on td { background: var(--maroon-soft); }
+.pg-side { background: var(--track); border-radius: 10px; padding: 14px 16px; }
+.pg-big { font-family: "Oswald", sans-serif; font-size: 30px; font-weight: 500; line-height: 1.1; }
+.pg-rules { list-style: none; padding: 0; margin: 10px 0; font-size: 13px; }
+.pg-rules li { display: flex; gap: 8px; align-items: flex-start; margin: 5px 0; }
+.pg-rules .ok, .pg-rules .bad, .pg-rules .warn { flex: none; width: 18px; height: 18px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; margin-top: 1px; }
+.pg-rules .ok { background: var(--good); } .pg-rules .bad { background: var(--critical); } .pg-rules .warn { background: var(--warn); color: #1c1a19; }
+.pg-cmp { width: 100%; font-size: 13px; margin-top: 6px; }
+.pg-cmp td { padding: 4px 0; border: 0; }
 </style>
 <link rel="stylesheet" href="story.css">
 </head>
@@ -589,6 +607,17 @@ details.methodwrap > summary { cursor: pointer; font-weight: 700; color: var(--m
     <div class="legend" id="budgetLegend"></div>
   </div>
   <div class="actions" id="actionCards"></div>
+  <div class="card" id="playCard" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-end">
+      <div><h3>Budget playground: build your own plan</h3>
+      <p class="sub" style="margin-bottom:0">Pick quantities from the real action catalog. We check the rules as you go and show what each action could return in July, based on the data. Our plan is loaded to start.</p></div>
+      <div class="tools"><button class="btn" id="pgOurs" type="button">Load our plan</button><button class="btn" id="pgClear" type="button">Clear all</button></div>
+    </div>
+    <div class="pg-wrap" style="margin-top:12px">
+      <div class="tablewrap"><table id="tPlay"></table></div>
+      <div class="pg-side" id="pgSide"></div>
+    </div>
+  </div>
   <div class="card">
     <h3>Options we priced and did not fund</h3>
     <div class="tablewrap"><table id="tRejected"></table></div>
@@ -598,7 +627,7 @@ details.methodwrap > summary { cursor: pointer; font-weight: 700; color: var(--m
 </section>
 
 <section id="p-method">
-  <div class="head"><p class="qnum">Appendix</p><h2>How we did it</h2></div>
+  <div class="head"><p class="qnum">Appendix</p><h2>How we did it</h2><p class="intro">Every claim, with its query, result, alternative explanation and limitation: <a href="appendix.html"><b>open the Claims and Evidence appendix →</b></a></p></div>
   <div class="card only-simple" style="margin-bottom:14px">
     <h3>How we did it, in four lines</h3>
     <ul class="plainlist">
@@ -704,7 +733,7 @@ details.methodwrap > summary { cursor: pointer; font-weight: 700; color: var(--m
   </div>
 </aside>
 </div>
-<footer class="wrap"><b>Luck or Leak</b> · The Gilded Ace is a fictional casino with synthetic data (release 0.9.0-draft), built for the TAMU Datathon 2026 Dashboard Royale challenge. Real context data: LVCVA, NOAA, Missouri Gaming Commission.</footer>
+<footer class="wrap"><b>Luck or Leak</b> · <a href="appendix.html">Claims and Evidence appendix</a> · The Gilded Ace is a fictional casino with synthetic data (release 0.9.0-draft), built for the TAMU Datathon 2026 Dashboard Royale challenge. Real context data: LVCVA, NOAA, Missouri Gaming Commission.</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="data.js"></script>
@@ -1389,9 +1418,99 @@ function renderPlan() {
   const tb = h("tbody"); rej.forEach(r => tb.append(h("tr", {}, h("td", { class: "wrap" }, r[0]), h("td", { class: "num" }, r[1]), h("td", { style: "white-space:normal;min-width:280px" }, r[2])))); t.append(tb);
 }
 
+// ---- Budget playground
+const OUR_PLAN = { "A-INSPECT": 5, "A-WAYFINDING": 1, "A-COMP-PILOT": 1 };
+let playQty = Object.assign({}, OUR_PLAN);
+function playModel() {
+  const E = EVID, C = D.comp;
+  const A = Object.fromEntries(rows(D.actions).map(a => [a.id, a]));
+  const cost = (id, q) => q * (A[id].unit_cost + A[id].per_day * Math.max(0, 30 - A[id].lead_days));
+  const days = id => Math.max(0, 30 - A[id].lead_days);
+  const shortDay = E.m1158.short / E.m1158.days;
+  const b = E.b40, liftDay = b.post_theo_per_day * ((b.pre / b.rest_pre) / (b.post / b.rest_post) - 1);
+  const g = E.wait_by_shift_techs.find(x => x.shift === "grave" && x.techs === 1), s2 = E.wait_by_shift_techs.find(x => x.shift === "swing" && x.techs === 2);
+  const techGain = E.faults_per_month_by_shift.grave * Math.max(0, g.wait - s2.wait) * E.shift_value.grave;
+  const rl = E.lost_by_mfr_month.Ridgeline;
+  // effect(q) -> [low, high] expected earnings in July, plus a plain note
+  const eff = {
+    "A-INSPECT": q => q ? [0, shortDay * days("A-INSPECT")] : [0, 0],
+    "A-WAYFINDING": q => q ? [0, liftDay * days("A-WAYFINDING")] : [0, 0],
+    "A-COMP-PILOT": () => [0, 0],
+    "A-COMP-CHANGE": () => [0, 0],
+    "A-TECH-SHIFT": q => q ? [0, techGain * days("A-TECH-SHIFT") / 30] : [0, 0],
+    "A-PREVENTIVE": q => q ? [0, rl * days("A-PREVENTIVE") / 30] : [0, 0],
+    "A-PROMO": q => [0, q * 79600],
+    "A-REPLACE-LEASE": () => [0, 0], "A-REPLACE-BUY": () => [0, 0],
+    "A-MOVE-MACHINE": () => [0, 0], "A-MOVE-BANK": () => [0, 0], "A-SURVEY": () => [0, 0]
+  };
+  const note = {
+    "A-INSPECT": "Only M-1158 shows a fault signal; the other inspections confirm our luck test. Upside only if a settings fault is found and fixed.",
+    "A-WAYFINDING": "First zone = Back Forty: closes the gap opened by the walkway closure. A second zone has no evidence of need.",
+    "A-COMP-PILOT": "Buys information: did the May 1 points cut bring guests back? No direct earnings.",
+    "A-COMP-CHANGE": "Changes everyone at once, so the effect cannot be measured. Cannot be combined with the pilot.",
+    "A-TECH-SHIFT": "Best case is the overnight shift; saves about " + money(techGain) + " a month. The first tech captures it all.",
+    "A-PREVENTIVE": "Best case is Ridgeline (breaks 3–4× more). Upper value assumes every breakdown is prevented.",
+    "A-PROMO": "Upper value copies our February tournament (one example). Prize costs are not included; starts July 15 at the earliest.",
+    "A-REPLACE-LEASE": "No evidence the machines are the problem: most low earners are in a quiet spot or new.",
+    "A-REPLACE-BUY": "Same as leasing, at full capital cost. Ten units exceed the budget.",
+    "A-MOVE-MACHINE": "Slots are full, so moves are swaps: one spot's gain is another's loss.",
+    "A-MOVE-BANK": "Same as moving machines, at bank scale.",
+    "A-SURVEY": "More guest feedback; no direct earnings in July."
+  };
+  return { A, cost, eff, note };
+}
+function renderPlayground() {
+  const { A, cost, eff, note } = playModel();
+  const ids = Object.keys(A).filter(id => id !== "A-HOLD");
+  const t = el("tPlay"); t.textContent = "";
+  t.append(h("thead", {}, h("tr", {}, h("th", {}, "Action"), h("th", { class: "num" }, "Price"), h("th", { class: "num" }, "Starts after"), h("th", {}, "How many"), h("th", { class: "num" }, "July cost"), h("th", { class: "num" }, "Could return (July)"))));
+  const tb = h("tbody");
+  let total = 0, lo = 0, hi = 0; const used = [];
+  for (const id of ids) {
+    const a = A[id], q = playQty[id] || 0, c = cost(id, q), [l, u] = eff[id](q);
+    total += c; lo += l; hi += u; if (q > 0) used.push(id);
+    const qty = h("span", { class: "pg-qty" },
+      h("button", { type: "button", "aria-label": "Fewer " + a.name, onclick: () => { playQty[id] = Math.max(0, q - 1); renderPlayground(); } }, "−"),
+      h("span", {}, q),
+      h("button", { type: "button", "aria-label": "More " + a.name, onclick: () => { playQty[id] = Math.min(a.quantity_limit, q + 1); renderPlayground(); } }, "+"));
+    if (q === 0) qty.firstChild.disabled = true; if (q >= a.quantity_limit) qty.lastChild.disabled = true;
+    const price = money(a.unit_cost) + (a.per_day ? " + $" + Math.round(a.per_day) + "/day" : "");
+    tb.append(h("tr", { class: q ? "on" : "" }, h("td", { class: "note", style: "min-width:240px" }, h("b", { style: "color:var(--ink);font-size:13px" }, a.name), h("div", { style: "margin-top:2px" }, note[id]), h("div", { class: "muted", style: "font-size:11px;margin-top:2px" }, "max " + a.quantity_limit + " · " + a.unit.replace("_", " "))), h("td", { class: "num" }, price), h("td", { class: "num" }, a.lead_days + "d"), h("td", {}, qty), h("td", { class: "num" }, q ? money(c) : "–"), h("td", { class: "num" }, q ? (u > 0 ? "up to " + money(u) : "info only") : "–")));
+  }
+  t.append(tb);
+  const types = used.length, comp = (playQty["A-COMP-PILOT"] || 0) > 0 && (playQty["A-COMP-CHANGE"] || 0) > 0;
+  const machineActs = used.filter(id => A[id].grp === "same_machine").length;
+  const rules = [
+    [total <= 100000, "Within the $100,000 budget" + (total > 100000 ? " (over by " + money(total - 100000) + ")" : "")],
+    [types <= 3, "At most 3 action types (" + types + " chosen)"],
+    [!comp, "Comp pilot and floor-wide comp change not combined"],
+    [machineActs <= 1 ? true : null, machineActs <= 1 ? "No move/replace conflicts" : "Several move/replace actions: make sure they target different machines"]
+  ];
+  const ok = rules.every(r => r[0] !== false);
+  const ours = { cost: Object.entries(OUR_PLAN).reduce((s2, [id, q]) => s2 + cost(id, q), 0), hi: Object.entries(OUR_PLAN).reduce((s2, [id, q]) => s2 + eff[id](q)[1], 0) };
+  const side = el("pgSide"); side.textContent = "";
+  const keep = 100000 - total;
+  side.append(
+    h("div", { class: "muted", style: "font-size:12px" }, "Your plan costs"),
+    h("div", { class: "pg-big", style: total > 100000 ? "color:var(--critical)" : "" }, money(total)),
+    h("div", { style: "font-size:13px;color:var(--ink2)" }, keep >= 0 ? "Keeps " + money(keep) + " of the budget" : "Over budget"),
+    h("div", { class: "budget", style: "margin:10px 0 4px" }, h("div", { style: "flex:" + Math.min(total, 100000) + ";background:var(--s1)" }, total > 0 ? money(total) : ""), h("div", { class: "keep", style: "flex:" + Math.max(keep, 0.0001) }, keep > 0 ? "Keep " + money(keep) : "")),
+    h("ul", { class: "pg-rules" }, ...rules.map(([r, txt]) => h("li", {}, h("span", { class: r === true ? "ok" : r === false ? "bad" : "warn", "aria-hidden": "true" }, r === true ? "✓" : r === false ? "✕" : "!"), h("span", {}, (r === true ? "" : r === false ? "Rule broken: " : "Check: ") + txt)))),
+    h("div", { style: "font-size:13px;font-weight:700;margin-top:6px" }, ok ? "This plan follows the rules." : "Fix the red items before submitting."),
+    h("table", { class: "pg-cmp" },
+      h("tr", {}, h("td", {}, ""), h("td", { class: "num muted" }, "Yours"), h("td", { class: "num muted" }, "Ours")),
+      h("tr", {}, h("td", {}, "Cost"), h("td", { class: "num" }, money(total)), h("td", { class: "num" }, money(ours.cost))),
+      h("tr", {}, h("td", {}, "Best-case July return"), h("td", { class: "num" }, money(hi)), h("td", { class: "num" }, money(ours.hi))),
+      h("tr", {}, h("td", {}, "Return per $1 spent"), h("td", { class: "num" }, total ? (hi / total).toFixed(2) : "–"), h("td", { class: "num" }, (ours.hi / ours.cost).toFixed(2)))),
+    h("p", { class: "means only-simple", style: "margin-top:8px" }, h("b", {}, "Remember: "), "\"could return\" is a best case, not a promise. Like a shopping list: the cheapest basket that fixes real problems usually beats the biggest one."),
+    h("p", { class: "means only-analyst", style: "margin-top:8px" }, h("b", {}, "Method: "), "cost = qty × (unit + per-day × max(0, 30 − lead days)). Upper returns are expected-earnings (theo) estimates for the days left after lead time, using the evidence on each page; lower bound 0 for all actions. Promotion upper value = Feb tournament uplift ($79.6k theo), excluding prizes.")
+  );
+}
+el("pgOurs").addEventListener("click", () => { playQty = Object.assign({}, OUR_PLAN); renderPlayground(); });
+el("pgClear").addEventListener("click", () => { playQty = {}; renderPlayground(); });
 function render() {
   readTheme();
-  renderBuckets(); renderOverview(); renderMachines(); renderFloor(); renderDowntime(); renderPlayers(); renderComps(); renderForecast(); renderPlan();
+  renderBuckets(); renderOverview(); renderMachines(); renderFloor(); renderDowntime(); renderPlayers(); renderComps(); renderForecast(); renderPlan(); renderPlayground();
 }
 const themes = ["light", "dark", "auto"]; let ti = 0;
 try { const s = localStorage.getItem("ga-theme"); if (s && themes.includes(s)) ti = themes.indexOf(s); } catch (e) {}
