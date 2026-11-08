@@ -1,0 +1,1440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luck or Leak</title>
+<meta name="description" content="Luck or Leak: should the casino replace its 10 lowest-earning slot machines? A plain-language review of six months of floor data and a $100,000 plan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Texas A&M inspired: Aggie maroon + warm neutrals. Chart colours validated for colour-blind safety. */
+:root {
+  color-scheme: light;
+  --page: #efe9df; --card: #fcfaf6; --ink: #1c1a19; --ink2: #4d4a47; --muted: #736d66;
+  --line: #ddd5c8; --axis: #c4bcb0; --grid: #ebe5da; --track: #e7dfd3;
+  --maroon: #500000; --maroon-ui: #6b0f1a; --maroon-soft: #f3e4e3; --on-maroon: #ffffff;
+  --s1: #9b2335; --s2: #2b73c2; --s3: #a8781a; --context: #bdb7ae;
+  --seq1: #f1dcdf; --seq2: #dca6ae; --seq3: #c06c7a; --seq4: #9b2335; --seq5: #5c0a14;
+  --band: rgba(155,35,53,.09);
+  --good: #0ca30c; --warn: #fab219; --serious: #ec835a; --critical: #d03b3b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #211c1b; --card: #2a2523; --ink: #f2efec; --ink2: #cfc8c1; --muted: #9a928a;
+    --line: #3b3431; --axis: #4b433f; --grid: #342e2c; --track: #37302d;
+    --maroon: #4a0d15; --maroon-ui: #e8909b; --maroon-soft: #3b2427; --on-maroon: #ffffff;
+    --s1: #c94a5c; --s2: #4a8fe0; --s3: #b0862a; --context: #5b5653;
+    --seq1: #3d1419; --seq2: #6e1f2b; --seq3: #a03547; --seq4: #cd6676; --seq5: #f0aab4;
+    --band: rgba(201,74,92,.14);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #211c1b; --card: #2a2523; --ink: #f2efec; --ink2: #cfc8c1; --muted: #9a928a;
+  --line: #3b3431; --axis: #4b433f; --grid: #342e2c; --track: #37302d;
+  --maroon: #4a0d15; --maroon-ui: #e8909b; --maroon-soft: #3b2427; --on-maroon: #ffffff;
+  --s1: #c94a5c; --s2: #4a8fe0; --s3: #b0862a; --context: #5b5653;
+  --seq1: #3d1419; --seq2: #6e1f2b; --seq3: #a03547; --seq4: #cd6676; --seq5: #f0aab4;
+  --band: rgba(201,74,92,.14);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 110px; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.6 "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+h1, h2, h3 { font-family: "Oswald", "Open Sans", system-ui, sans-serif; font-weight: 600; letter-spacing: .005em; }
+a { color: var(--maroon-ui); }
+.wrap { max-width: 1160px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
+
+.top { background: var(--maroon); color: var(--on-maroon); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; }
+.top .name { font-family: "Oswald", sans-serif; font-size: 22px; font-weight: 600; letter-spacing: .02em; }
+.top .name span { font-family: "Open Sans", sans-serif; font-size: 13px; font-weight: 400; opacity: .85; margin-left: 10px; letter-spacing: 0; }
+.top .right { display: flex; gap: 10px; align-items: center; font-size: 12px; }
+.top .tag { opacity: .85; }
+.top button { background: transparent; color: var(--on-maroon); border: 1px solid rgba(255,255,255,.4); border-radius: 4px; height: 32px; padding: 0 12px; font: inherit; cursor: pointer; }
+.top button:hover { background: rgba(255,255,255,.12); }
+@media (max-width: 600px) { .top .name span, .top .tag { display: none; } }
+
+.answer { padding-top: 34px; padding-bottom: 10px; }
+.kicker { color: var(--maroon-ui); font-weight: 700; font-size: 13px; margin: 0 0 4px; }
+.answer h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.1; margin: 0 0 10px; }
+.answer .lede { font-size: 17px; color: var(--ink2); max-width: 780px; margin: 0 0 22px; }
+.buckets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 860px) { .buckets { grid-template-columns: 1fr; } }
+.bucket { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; }
+.bucket h3::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--bc, var(--axis)); margin-right: 8px; vertical-align: 2px; }
+.bucket .count { font-family: "Oswald", sans-serif; font-size: 34px; line-height: 1; }
+.bucket h3 { font-size: 18px; margin: 6px 0 4px; }
+.bucket p { margin: 0 0 10px; color: var(--ink2); font-size: 14px; }
+.bucket .ids { display: flex; flex-wrap: wrap; gap: 6px; }
+.bucket .ids span { font-size: 12px; font-weight: 600; background: var(--track); border-radius: 4px; padding: 2px 7px; }
+.analogy { display: flex; gap: 14px; background: var(--maroon-soft); border-radius: 6px; padding: 14px 18px; margin: 16px 0 0; }
+.analogy .lbl { flex: none; font-family: "Oswald", sans-serif; font-weight: 600; color: var(--maroon-ui); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; padding-top: 2px; width: 104px; }
+.analogy p { margin: 0; font-size: 15px; }
+.analogy p + p { margin-top: 6px; }
+.analogy .so { font-weight: 700; }
+@media (max-width: 600px) { .analogy { flex-direction: column; gap: 4px; } }
+
+.glance-h { font-size: 20px; margin: 4px 0 10px; }
+.glance-note { color: var(--muted); font-size: 13px; margin: -6px 0 12px; }
+.glance { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 960px) { .glance { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .glance { grid-template-columns: 1fr; } }
+.tile { display: flex; flex-direction: column; text-decoration: none; color: inherit; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; transition: background .15s, border-color .15s; }
+.tile:hover, .tile:focus-visible { background: var(--maroon-soft); border-color: var(--maroon-ui); outline: none; }
+.tile .q { font-size: 12px; font-weight: 700; color: var(--maroon-ui); }
+.tile .big { font-family: "Oswald", sans-serif; font-size: 32px; font-weight: 500; line-height: 1.1; margin: 6px 0 0; }
+.tile .what { font-size: 13px; font-weight: 600; color: var(--ink); }
+.tile p { font-size: 13px; color: var(--ink2); margin: 6px 0 10px; flex: 1; }
+.tile .go { font-size: 12px; font-weight: 700; color: var(--maroon-ui); }
+details.glossary { background: var(--card); border: 1px solid var(--line); border-radius: 6px; margin: 16px 0 0; }
+details.glossary summary { cursor: pointer; padding: 12px 18px; font-weight: 600; }
+.gl { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 24px; padding: 0 18px 14px; }
+.gl div { font-size: 14px; color: var(--ink2); padding: 6px 0; border-top: 1px solid var(--line); }
+.gl b { color: var(--ink); display: block; }
+
+.filterbar { position: sticky; top: 0; z-index: 20; background: var(--page); border-bottom: 1px solid var(--line); padding: 10px 0 8px; margin-top: 22px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filters label { display: flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 0 10px; height: 36px; color: var(--muted); font-size: 12px; }
+.filters select { border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; padding: 4px 0; cursor: pointer; max-width: 170px; }
+.filters select option { background: var(--card); color: var(--ink); }
+.btn { border: 1px solid var(--line); background: var(--card); color: var(--ink2); border-radius: 4px; height: 36px; padding: 0 12px; font: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { border-color: var(--axis); color: var(--ink); }
+nav.sections { display: flex; gap: 2px; overflow-x: auto; margin-top: 8px; scrollbar-width: none; }
+nav.sections a { white-space: nowrap; text-decoration: none; color: var(--ink2); font-size: 13px; padding: 3px 10px; border-bottom: 2px solid transparent; }
+nav.sections a:hover { color: var(--ink); border-bottom-color: var(--maroon-ui); }
+
+section { padding: 40px 0 28px; border-bottom: 1px solid var(--line); }
+section:last-of-type { border-bottom: 0; }
+.qnum { color: var(--maroon-ui); font-weight: 700; font-size: 13px; margin: 0; }
+section > .head h2 { font-size: clamp(22px, 3vw, 30px); line-height: 1.2; margin: 2px 0 6px; max-width: 900px; }
+section > .head p.intro { margin: 0 0 18px; color: var(--ink2); max-width: 780px; }
+.pill { display: inline-block; font-size: 12px; color: var(--ink2); background: var(--track); border-radius: 4px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; font-weight: 400; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; }
+.stat .label { color: var(--ink2); font-size: 13px; }
+.stat .value { font-family: "Oswald", sans-serif; font-size: 28px; font-weight: 500; margin: 2px 0; }
+.stat .foot { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.stat.key .value { color: var(--maroon-ui); }
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; align-items: start; }
+.row.wide { grid-template-columns: 1.4fr 1fr; }
+@media (max-width: 900px) { .row, .row.wide { grid-template-columns: 1fr; } }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; min-width: 0; }
+.card h3 { font-size: 17px; margin: 0; }
+.card .sub { color: var(--ink2); font-size: 13px; margin: 2px 0 10px; }
+.card .foot { color: var(--muted); font-size: 12px; margin-top: 8px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.chart { position: relative; height: 280px; }
+.chart.tall { height: 360px; }
+.chart.short { height: 220px; }
+.linkbtn { border: 0; background: none; color: var(--maroon-ui); font: inherit; font-size: 12px; cursor: pointer; padding: 0; text-decoration: underline; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--ink2); margin-bottom: 6px; }
+.legend i { display: inline-block; width: 14px; height: 3px; margin-right: 6px; vertical-align: middle; border-radius: 2px; }
+.legend i.dot { width: 9px; height: 9px; border-radius: 50%; }
+.legend i.box { width: 10px; height: 10px; border-radius: 2px; }
+.legend i.ring { width: 11px; height: 11px; border-radius: 50%; background: transparent !important; border: 2px solid var(--ink); }
+.legend i.dash { background: repeating-linear-gradient(90deg, var(--c) 0 4px, transparent 4px 7px) !important; }
+
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; white-space: normal; vertical-align: bottom; position: sticky; top: 0; background: var(--card); }
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable:hover { color: var(--ink); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.wrap { white-space: normal; min-width: 150px; }
+tr.hl td { background: var(--maroon-soft); }
+.datatable { margin-top: 10px; max-height: 260px; overflow: auto; border: 1px solid var(--line); border-radius: 4px; }
+.datatable[hidden] { display: none; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.chip::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--c, var(--muted)); flex: none; }
+.chip.critical { --c: var(--critical); } .chip.serious { --c: var(--serious); } .chip.warning { --c: var(--warn); } .chip.good { --c: var(--good); } .chip.info { --c: var(--s2); } .chip.neutral { --c: var(--axis); }
+.tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.tools input { height: 34px; border: 1px solid var(--line); border-radius: 4px; padding: 0 10px; background: var(--card); color: var(--ink); font: inherit; font-size: 13px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; flex-wrap: wrap; }
+.seg button { border: 0; border-right: 1px solid var(--line); background: var(--card); color: var(--ink2); font: inherit; font-size: 12px; padding: 5px 10px; cursor: pointer; }
+.seg button:last-child { border-right: 0; }
+.seg button.on { background: var(--maroon-ui); color: var(--card); font-weight: 600; }
+
+.term { border-bottom: 1px dotted var(--muted); cursor: help; position: relative; }
+.term:hover::after, .term:focus::after { content: attr(data-tip); position: absolute; left: 0; top: 100%; margin-top: 6px; z-index: 30; width: 260px; background: var(--ink); color: var(--card); font-size: 12.5px; font-weight: 400; line-height: 1.45; padding: 8px 10px; border-radius: 4px; white-space: normal; }
+
+.callout { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px; margin: 0 0 14px; font-size: 14px; }
+
+.budget { display: flex; height: 30px; border-radius: 4px; overflow: hidden; gap: 2px; margin: 10px 0 8px; }
+.budget div { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; }
+.budget .keep { background: var(--track); color: var(--ink2); }
+.actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px; }
+@media (max-width: 900px) { .actions { grid-template-columns: 1fr; } }
+.action .cause::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--ac); margin-right: 7px; vertical-align: -1px; }
+.action .cause { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.action h3 { font-size: 19px; margin: 4px 0 2px; }
+.action .cost { font-family: "Oswald", sans-serif; font-size: 26px; }
+.action .plain { background: var(--maroon-soft); border-radius: 4px; padding: 8px 10px; font-size: 14px; margin: 10px 0; }
+.action dl { margin: 0; display: grid; gap: 8px; }
+.action dt { font-size: 12px; font-weight: 700; color: var(--ink2); }
+.action dd { margin: 0; font-size: 13.5px; }
+.method { columns: 2 320px; column-gap: 28px; font-size: 13.5px; color: var(--ink2); }
+.method h4 { color: var(--ink); margin: 0 0 4px; font-size: 14px; break-after: avoid; }
+.method p, .method ul { margin: 0 0 14px; break-inside: avoid; }
+.method ul { padding-left: 18px; }
+code { font-size: 12px; background: var(--track); padding: 1px 5px; border-radius: 3px; }
+footer { padding: 30px 0 50px; color: var(--muted); font-size: 12px; }
+.muted { color: var(--muted); }
+
+/* ===== BI app layout ===== */
+:root { --page: #eeebe6; --card: #ffffff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page: #1c1817; --card: #282321; } }
+:root[data-theme="dark"] { --page: #1c1817; --card: #282321; }
+html { scroll-padding-top: 0; }
+.top { background: linear-gradient(90deg, #500000, #732f2f); position: sticky; top: 0; z-index: 30; }
+.topin { display: flex; align-items: center; gap: 10px; padding: 10px 18px; max-width: 1480px; margin: 0 auto; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+.logo { width: 38px; height: 38px; border-radius: 8px; background: #fff; color: #500000; display: grid; place-items: center; font-family: "Oswald", sans-serif; font-weight: 600; font-size: 14px; letter-spacing: -.02em; }
+.brand .name { font-family: "Oswald", sans-serif; font-size: 20px; font-weight: 600; color: #fff; line-height: 1.1; }
+.brand .subn { font-size: 12px; color: rgba(255,255,255,.8); }
+.tabs { display: flex; gap: 4px; background: rgba(0,0,0,.18); padding: 4px; border-radius: 10px; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+.tabs a { color: rgba(255,255,255,.88); text-decoration: none; font-size: 13px; font-weight: 600; padding: 7px 9px; border-radius: 7px; white-space: nowrap; }
+.tabs a:hover { background: rgba(255,255,255,.12); }
+.tabs a.on { background: #fff; color: #500000; }
+.top button { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.45); border-radius: 7px; height: 34px; padding: 0 12px; font: inherit; font-size: 13px; cursor: pointer; }
+.app { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 16px; max-width: 1480px; margin: 0 auto; padding: 16px 18px 30px; align-items: start; }
+@media (max-width: 1000px) { .app { grid-template-columns: 1fr; } .side { order: -1; position: static !important; } }
+main > section { display: none; padding: 0 0 10px; border: 0; }
+main > section.on { display: block; }
+.card, .stat, .bucket, .callout, details.glossary { border: 0; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 1px 8px rgba(0,0,0,.04); }
+.analogy { border-radius: 10px; }
+.side { position: sticky; top: 76px; display: grid; gap: 12px; }
+.panel { background: var(--card); border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 1px 8px rgba(0,0,0,.04); }
+.panel h3 { font-size: 15px; margin: 0 0 10px; }
+.fl { display: block; font-size: 12px; font-weight: 600; color: var(--ink2); margin-bottom: 10px; }
+.fl select { display: block; width: 100%; margin-top: 4px; height: 36px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink); font: inherit; font-size: 13px; padding: 0 8px; }
+.panel .btn { width: 100%; }
+.hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+.mini { margin: 0; font-size: 12.5px; }
+.mini dt { font-weight: 700; color: var(--ink); margin-top: 8px; }
+.mini dt:first-child { margin-top: 0; }
+.mini dd { margin: 1px 0 0; color: var(--ink2); }
+.panel .ans { font-family: "Oswald", sans-serif; font-size: 18px; line-height: 1.2; margin: 0 0 6px; }
+.panel p { font-size: 13px; color: var(--ink2); margin: 0 0 8px; }
+.banner { background: var(--card); border-radius: 10px; padding: 14px 18px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 1px 8px rgba(0,0,0,.04); display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.banner .bq { font-size: 12px; font-weight: 700; color: var(--maroon-ui); }
+.banner .ba { font-family: "Oswald", sans-serif; font-size: 26px; font-weight: 600; line-height: 1.15; }
+.banner .bs { font-size: 13.5px; color: var(--ink2); }
+.banner .scope { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+@media (max-width: 760px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+.kt { display: block; text-decoration: none; color: #fff; border-radius: 10px; padding: 14px 16px; min-height: 104px; transition: transform .12s, box-shadow .12s; }
+.kt:hover, .kt:focus-visible { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(80,0,0,.25); outline: none; }
+.kt .l { font-size: 13px; color: rgba(255,255,255,.9); }
+.kt .v { font-family: "Oswald", sans-serif; font-size: 30px; font-weight: 500; line-height: 1.15; margin: 4px 0 2px; }
+.kt .f { font-size: 12px; color: rgba(255,255,255,.82); }
+.kt.c1 { background: linear-gradient(135deg, #3d0000, #5c0a14); }
+.kt.c2 { background: linear-gradient(135deg, #5c0a14, #7a1a2a); }
+.kt.c3 { background: linear-gradient(135deg, #7a1a2a, #94293b); }
+.kt.c4 { background: linear-gradient(135deg, #8a3a3a, #a8584c); }
+.ovgrid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 14px; }
+@media (max-width: 1100px) { .ovgrid { grid-template-columns: 1fr; } }
+.card .means { font-size: 12.5px; color: var(--ink2); margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--line); }
+.card .means b { color: var(--maroon-ui); }
+.card .more { font-size: 12px; font-weight: 700; color: var(--maroon-ui); text-decoration: none; }
+.card .more:hover { text-decoration: underline; }
+.cardhead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+footer { max-width: 1480px; margin: 0 auto; padding: 0 18px 40px; }
+
+/* ===== Simple / Analyst views ===== */
+body.view-simple .only-analyst, body.view-analyst .only-simple { display: none !important; }
+.top .viewtog { display: flex; background: rgba(0,0,0,.18); border-radius: 8px; padding: 3px; }
+.top .viewtog button { border: 0; background: transparent; color: #fff; height: 28px; padding: 0 11px; border-radius: 6px; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.top .viewtog button.on { background: #fff; color: #500000; }
+body.view-analyst .analogy { cursor: pointer; padding: 10px 18px; }
+body.view-analyst .analogy > div:last-child { display: none; }
+body.view-analyst .analogy.open > div:last-child { display: block; }
+body.view-analyst .analogy .lbl::after { content: " ▸"; }
+body.view-analyst .analogy.open .lbl::after { content: " ▾"; }
+details.methodwrap > summary { cursor: pointer; font-weight: 700; color: var(--maroon-ui); margin: 4px 0 12px; }
+.plainlist { margin: 6px 0 0; padding-left: 18px; font-size: 14px; color: var(--ink2); }
+.plainlist li { margin: 4px 0; }
+.mini code { font-size: 11.5px; }
+</style>
+<link rel="stylesheet" href="story.css">
+</head>
+<body>
+<header class="top">
+  <div class="topin">
+    <div class="brand"><div class="logo" aria-hidden="true">L?L</div><div><div class="name">Luck or Leak</div><div class="subn">The Gilded Ace slot floor · Jan–Jun 2025 · TAMU Datathon 2026</div></div></div>
+    <nav class="tabs" id="tabs" aria-label="Pages">
+      <a href="#overview">Overview</a><a href="#machines">Machines</a><a href="#floor">Demand</a><a href="#downtime">Downtime</a><a href="#players">Players</a><a href="#comps">Comps</a><a href="#forecast">Forecast</a><a href="#plan">$100k plan</a><a href="#method">Method</a>
+    </nav>
+    <div class="viewtog" role="group" aria-label="Dashboard view"><button type="button" data-view="simple">Simple</button><button type="button" data-view="analyst">Analyst</button></div>
+    <button id="storyBtn" type="button" aria-label="Replay the story">▶ Story</button>
+  </div>
+</header>
+
+<div class="app">
+<main id="main">
+
+
+<section id="p-overview">
+  <div class="banner">
+    <div style="flex:1;min-width:260px">
+      <div class="bq">Should we replace the 10 machines that earned the least?</div>
+      <div class="ba">Not all 10. Only one looks broken.</div>
+      <div class="bs">7 sit in a quiet corner, 2 are too new to judge, and 1 (M-1158) pays out wins too often. Click any tile or chart to see the details.</div>
+      <div class="scope" id="ovScope"></div>
+    </div>
+  </div>
+  <div class="tiles" id="tiles"></div>
+  <div class="ovgrid">
+    <div class="card">
+      <div class="cardhead"><h3>Each day: casino kept vs. expected to keep</h3><a class="more" href="#machines">Details →</a></div>
+      <div class="legend" style="margin-top:6px"><span><i style="background:var(--s1)"></i>Actually kept</span><span><i style="background:var(--s2)"></i>Expected to keep</span></div>
+      <div class="chart short"><canvas id="cOverview" role="img" aria-label="Daily house win versus expected earnings"></canvas></div>
+      <p class="means only-simple"><b>What it means:</b> the lines move together. Daily gaps are luck and cancel out, like a store's sales vs. its forecast.</p>
+      <p class="means only-analyst"><b>Method:</b> Daily Σ house win vs. Σ theo, where theo = Σ bet × (1 − RTP). Luck = house win − theo. Active machine-days only.</p>
+    </div>
+    <div class="card">
+      <div class="cardhead"><h3>Management's 10: why they earned little</h3><a class="more" href="#machines">Details →</a></div>
+      <div class="chart"><canvas id="cOvVerdict" role="img" aria-label="Verdicts for management's 10 machines"></canvas></div>
+      <p class="means only-simple"><b>What it means:</b> like 10 slow restaurant branches. Most are on a quiet street or just opened; one has a kitchen problem.</p>
+      <p class="means only-analyst"><b>Method:</b> Rules: z ≤ −3 and hit-rate z > 5 → inspect; on floor < 50% of days → too new; theo per available hour < 0.75 × floor average in Back Forty → location.</p>
+    </div>
+    <div class="card">
+      <div class="cardhead"><h3>Expected earnings per working hour, by zone</h3><a class="more" href="#floor">Details →</a></div>
+      <div class="chart short"><canvas id="cOvZone" role="img" aria-label="Expected earnings per working hour by zone"></canvas></div>
+      <p class="means only-simple"><b>What it means:</b> Back Forty is the side street. Same games, fewer people walking by.</p>
+      <p class="means only-analyst"><b>Method:</b> Σ theo ÷ Σ available hours (ratio of sums). Zone taken from the placement at the start of each gaming day.</p>
+    </div>
+    <div class="card">
+      <div class="cardhead"><h3>Breakdown cost by brand</h3><a class="more" href="#downtime">Details →</a></div>
+      <div class="chart"><canvas id="cOvBrand" role="img" aria-label="Lost expected earnings by brand"></canvas></div>
+      <p class="means only-simple"><b>What it means:</b> like one car model that's always in the shop. Ridgeline causes most of the lost play.</p>
+      <p class="means only-analyst"><b>Method:</b> Lost theo = unavailable seconds × the machine's coin-in per available second at that local hour × its theo hold (machine_hour).</p>
+    </div>
+    <div class="card">
+      <div class="cardhead"><h3>Forecast vs. actual (May–June test)</h3><a class="more" href="#forecast">Details →</a></div>
+      <div class="legend" style="margin-top:6px"><span><i style="background:var(--s1)"></i>Actual</span><span><i style="background:var(--s2)"></i>Our forecast</span><span><i class="dash" style="--c:var(--muted)"></i>Flat average</span></div>
+      <div class="chart short"><canvas id="cOvFc" role="img" aria-label="Forecast versus actual"></canvas></div>
+      <p class="means only-simple"><b>What it means:</b> like a weather forecast that says "it's Saturday, expect a crowd." The weekday alone gets most of the way.</p>
+      <p class="means only-analyst"><b>Method:</b> Train Jan–Apr, test May–Jun (61 days). Weekday mean on non-event days × event multiplier (events announced ≤ Apr 30). Metric: MAE vs. a constant-mean baseline.</p>
+    </div>
+    <div class="card">
+      <div class="cardhead"><h3>The $100,000 plan</h3><a class="more" href="#plan">Details →</a></div>
+      <div class="chart"><canvas id="cOvBudget" role="img" aria-label="Budget split"></canvas></div>
+      <p class="means only-simple"><b>What it means:</b> fix what we can prove, test what we can't, and keep the rest.</p>
+      <p class="means only-analyst"><b>Method:</b> Cost = qty × (unit + per-day × max(0, 30 − lead days)). Inspect 5 × $1,200; signage $7,500; comp pilot $4,000; $82,500 preserved.</p>
+    </div>
+  </div>
+</section>
+
+<section id="p-machines">
+  <div class="head"><p class="qnum">Question 1 of 6 · Which machines are truly underperforming?</p>
+  <h2>Nine of the ten are explained by luck, location or newness. One machine is not.</h2>
+  <div class="buckets" id="buckets" style="margin-bottom:16px"></div>
+  <p class="intro">Total earnings are unfair to machines that were new, in quiet spots, or designed to keep less. So we score every machine on two things: <span class="term" tabindex="0" data-tip="Expected earnings for each hour the machine was working. Removes luck and downtime, so it measures how much people actually played it.">expected earnings per working hour</span> and a <span class="term" tabindex="0" data-tip="How unusual the machine's result is for its game. Around 0 is normal; between −2 and +2 happens all the time; below −3 is very unlikely to be luck (about 1 in 700).">luck score</span>.</p></div>
+  <div class="row">
+    <div class="card">
+      <h3>Every machine: how busy it is vs. how lucky it was</h3>
+      <p class="sub">Further right = more played. Further down = unluckier. Below the lower dashed line is too unlucky to be chance.</p>
+      <div class="legend"><span><i class="dot" style="background:var(--s1)"></i>Back Forty zone</span><span><i class="dot" style="background:var(--context)"></i>Rest of the floor</span><span><i class="ring"></i>Management's 10</span></div>
+      <div class="chart tall"><canvas id="cScatter" role="img" aria-label="Machines by expected earnings per hour and luck score"></canvas></div>
+      <div class="foot"><span>Source: machine_day, game_math. Click a dot to find it in the table below.</span><button class="linkbtn" data-table="cScatter">Show numbers</button></div>
+      <div class="datatable" id="t-cScatter" hidden></div>
+    </div>
+    <div class="card">
+      <h3>Management's 10, one by one</h3>
+      <p class="sub">Selected by lowest total house win, Jan–Jun. Numbers follow the period filter.</p>
+      <div class="tablewrap"><table id="tBottom"></table></div>
+      <div class="foot"><span>Shows the same 10 machines whatever zone is selected.</span></div>
+    </div>
+  </div>
+  <div class="callout" id="leakCallout"></div>
+  <div class="card" id="simCard" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:flex-end">
+      <div><h3>Luck simulator: could bad luck explain it?</h3>
+      <p class="sub" style="margin-bottom:0">We replay the selected period 1,000 times on a <b>fair</b> machine with the same game and the same amount of play, and count how often it does as badly as the real one.</p></div>
+      <div class="tools"><label class="fl" style="margin:0">Machine<select id="simMachine" style="min-width:230px"></select></label><button class="btn" id="simRun" type="button" style="background:var(--maroon-ui);color:var(--card);border-color:var(--maroon-ui);font-weight:700">▶ Replay 1,000 times</button></div>
+    </div>
+    <div class="legend" style="margin-top:10px"><span><i class="box" style="background:var(--context)"></i>Fair replays</span><span><i class="box" style="background:var(--s1)"></i>Replays as bad as the real result</span><span><i style="background:var(--ink2)"></i>Real result</span></div>
+    <div class="chart short"><canvas id="cSim" role="img" aria-label="Distribution of simulated keep rates with the real result marked"></canvas></div>
+    <p class="means only-simple" id="simSimple"></p>
+    <p class="means only-analyst" id="simAnalyst"></p>
+  </div>
+  <div class="row only-analyst">
+    <div class="card">
+      <h3>Luck scores vs. what pure chance predicts</h3>
+      <p class="sub">Bars: machines per luck-score band in the selected period. Line: expected count under a standard normal. A close fit means the test is calibrated; only the far-left tail stands out.</p>
+      <div class="chart"><canvas id="cZHist" role="img" aria-label="Histogram of luck z-scores versus normal expectation"></canvas></div>
+      <div class="foot"><span>z = (house win − theo) ÷ √Σ(bet² × payout_multiplier_variance)</span><button class="linkbtn" data-table="cZHist">Show numbers</button></div>
+      <div class="datatable" id="t-cZHist" hidden></div>
+    </div>
+    <div class="card">
+      <h3>Win-frequency check: largest gaps from game design</h3>
+      <p class="sub">Hit rate = payout-positive spins ÷ paid spins. z = (observed − spec) ÷ √(spec × (1 − spec) ÷ spins).</p>
+      <div class="tablewrap"><table id="tHit"></table></div>
+    </div>
+  </div>
+  <div class="analogy"><div class="lbl">In plain terms</div><div>
+    <p>The luck score works like a coin-flip test. Getting 7 heads in 10 flips is normal, and nobody would call the coin rigged. Getting 700 heads in 1,000 flips is a different story. Nine of the ten machines are in "7 out of 10" territory. M-1158 is in "700 out of 1,000" territory: it pays a win on 39% of spins when its design says 32%, month after month.</p>
+    <p class="so">So what: don't replace machines for being unlucky. Have a technician check M-1158's settings.</p></div></div>
+  <div class="card" style="margin-top:14px">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px"><div><h3>All machines in your current selection</h3><p class="sub" style="margin:2px 0 0">Click a column heading to sort. How we assign each verdict is explained in <a href="#method">How we did it</a>.</p></div>
+      <div class="tools"><input id="mSearch" type="search" placeholder="Search machine, game, zone…" aria-label="Search machines"><button class="btn" id="mMore" type="button">Show all</button></div></div>
+    <div class="tablewrap" style="max-height:440px;overflow:auto"><table id="tMachines"></table></div>
+    <div class="foot"><span>Location is taken at the start of each day, so machines that moved count in the right place.</span></div>
+  </div>
+</section>
+
+<section id="p-floor">
+  <div class="head"><p class="qnum">Question 2 of 6 · What changed in demand, and why?</p>
+  <h2>Demand was steady overall. Back Forty is the quiet corner, and it got quieter when its hallway closed.</h2>
+  <p class="intro">A renovation closed the walkway from the Main Entrance to Back Forty from March 3 to April 7. Foot traffic dropped by about a third and did not fully come back.</p></div>
+  <div class="row wide">
+    <div class="card">
+      <h3>Floor map: which banks earn the most per working hour</h3>
+      <p class="sub">Darker = earns more. Click a bank to focus the whole page on it. The dashed line is the walkway that was closed.</p>
+      <div class="legend" id="mapLegend"></div>
+      <div class="chart tall"><canvas id="cMap" role="img" aria-label="Floor map of banks shaded by expected earnings per working hour"></canvas></div>
+      <div class="foot"><span>Source: floor_locations, floor_walkways, machine_day.</span><button class="linkbtn" data-table="cMap">Show numbers</button></div>
+      <div class="datatable" id="t-cMap" hidden></div>
+    </div>
+    <div class="card">
+      <h3>Same game, different zone</h3>
+      <p class="sub">Expected earnings per working hour. Pick a game to see that identical machines earn less in Back Forty.</p>
+      <div class="seg" id="themeToggle" role="group" aria-label="Game"></div>
+      <div class="chart" style="margin-top:8px"><canvas id="cZone" role="img" aria-label="Expected earnings per working hour by zone"></canvas></div>
+      <div class="foot"><span>Source: machine_day, game_math. Click a bar to focus on that zone.</span><button class="linkbtn" data-table="cZone">Show numbers</button></div>
+      <div class="datatable" id="t-cZone" hidden></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="card">
+      <h3>Foot traffic: Back Forty vs. the rest of the floor</h3>
+      <p class="sub">Door-sensor entries, 7-day average. 100 = normal level before the closure (Jan 1 – Mar 2). Shaded = walkway closed.</p>
+      <div class="legend"><span><i style="background:var(--s1)"></i>Back Forty</span><span><i style="background:var(--context)"></i>All other zones</span></div>
+      <div class="chart"><canvas id="cTraffic" role="img" aria-label="Back Forty foot traffic index versus other zones"></canvas></div>
+      <div class="foot"><span>Source: zone_traffic_hourly. Counts sensor crossings, not unique people. Offline sensor hours are skipped, not counted as zero.</span><button class="linkbtn" data-table="cTraffic">Show numbers</button></div>
+      <div class="datatable" id="t-cTraffic" hidden></div>
+    </div>
+    <div class="card">
+      <h3>Which events brought people in?</h3>
+      <p class="sub">Amount bet on event days vs. the same weekday without an event.</p>
+      <div class="tablewrap"><table id="tEvents"></table></div>
+      <div class="foot"><span>Source: events, machine_day. Extra earnings = extra amount bet × the floor's expected keep rate.</span></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="card">
+      <h3>Average amount bet per day, by weekday</h3>
+      <p class="sub">Saturdays bring in about 1.6× a Tuesday.</p>
+      <div class="chart short"><canvas id="cWeekday" role="img" aria-label="Average daily amount bet by weekday"></canvas></div>
+      <div class="foot"><span>Source: machine_day.</span><button class="linkbtn" data-table="cWeekday">Show numbers</button></div>
+      <div class="datatable" id="t-cWeekday" hidden></div>
+    </div>
+    <div class="card">
+      <h3>The casino vs. Las Vegas as a whole</h3>
+      <p class="sub">Both indexed so January = 100. The June dip happened citywide too.</p>
+      <div class="legend"><span><i style="background:var(--s1)"></i>Gilded Ace amount bet per day</span><span><i style="background:var(--s2)"></i>Las Vegas visitors per day (real LVCVA data)</span></div>
+      <div class="chart short"><canvas id="cCity" role="img" aria-label="Casino versus Las Vegas visitors index"></canvas></div>
+      <div class="foot"><span>City data was published after 2025, so it is used for context only, never in the forecast.</span><button class="linkbtn" data-table="cCity">Show numbers</button></div>
+      <div class="datatable" id="t-cCity" hidden></div>
+    </div>
+  </div>
+  <div class="analogy"><div class="lbl">In plain terms</div><div>
+    <p>Back Forty is like a good shop on a side street. It sells the same products as the shops on Main Street, but fewer people walk past. When the hallway leading to it was closed for five weeks, a third of the passers-by disappeared, and some never came back. Swapping in shiny new machines there is like restocking the side-street shop: it doesn't bring people down the street.</p>
+    <p class="so">So what: make Back Forty easier to find before spending money on its machines. Big sports weekends and our own tournament drew crowds; conventions barely did.</p></div></div>
+</section>
+
+<section id="p-downtime">
+  <div class="head"><p class="qnum">Question 3 of 6 · How much play was lost to downtime, and when?</p>
+  <h2>Breakdowns cost less than half a percent of earnings, and one brand caused most of it</h2>
+  <p class="intro">We price lost play as what each machine normally earns at that hour of the day, multiplied by the hours it was out of service.</p></div>
+  <div class="stats" id="dtKpis"></div>
+  <div class="row wide">
+    <div class="card">
+      <h3>Earnings lost to downtime each month, by machine brand</h3>
+      <p class="sub">Includes repairs, installs and moves.</p>
+      <div class="legend"><span><i class="box" style="background:var(--s1)"></i>Ridgeline</span><span><i class="box" style="background:var(--s2)"></i>Halcyon</span><span><i class="box" style="background:var(--s3)"></i>Northwind</span></div>
+      <div class="chart"><canvas id="cLost" role="img" aria-label="Lost expected earnings by month and brand"></canvas></div>
+      <div class="foot"><span>Source: machine_hour.</span><button class="linkbtn" data-table="cLost">Show numbers</button></div>
+      <div class="datatable" id="t-cLost" hidden></div>
+    </div>
+    <div class="card">
+      <h3>How often each brand breaks</h3>
+      <p class="sub">Repairs per 100 days on the floor.</p>
+      <div class="chart short"><canvas id="cFaultRate" role="img" aria-label="Faults per 100 machine-days by brand"></canvas></div>
+      <div class="foot"><span>Source: operations, machine_day.</span><button class="linkbtn" data-table="cFaultRate">Show numbers</button></div>
+      <div class="datatable" id="t-cFaultRate" hidden></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="card">
+      <h3>Hours until a technician starts the repair</h3>
+      <p class="sub">By how many slot technicians were working when the machine broke.</p>
+      <div class="chart short"><canvas id="cWait" role="img" aria-label="Average wait by technicians on shift"></canvas></div>
+      <div class="foot"><span>Source: operations, shift_roster.</span><button class="linkbtn" data-table="cWait">Show numbers</button></div>
+      <div class="datatable" id="t-cWait" hidden></div>
+    </div>
+    <div class="card">
+      <h3>Technician staffing by month</h3>
+      <p class="sub">Average technicians who actually worked vs. planned, per shift.</p>
+      <div class="tablewrap"><table id="tTech"></table></div>
+      <div class="foot"><span>Source: shift_roster. Highlighted months had days with no day-shift technician.</span></div>
+    </div>
+  </div>
+  <div class="analogy"><div class="lbl">In plain terms</div><div>
+    <p>Downtime is like a supermarket checkout lane closing for a few hours: annoying, but a small share of sales. Most of the problem comes from one brand, Ridgeline, much like one car model that keeps going back to the shop. Repairs also wait longest on days nobody is scheduled, which happened 12 times in April and May.</p>
+    <p class="so">So what: downtime does not explain management's 10 (all were working over 99% of the time). Hiring an extra technician would cost more than it saves this month.</p></div></div>
+</section>
+
+<section id="p-players">
+  <div class="head"><p class="qnum">Question 4 of 6 · What did tracked players wager, get back and net? <span class="pill" id="grpBadge"></span></p>
+  <h2>Guests lost about what the games are designed to take, and a small group carries most of it</h2>
+  <p class="intro">This covers guests who used a loyalty card. Play without a card can't be tied to a person, so these totals are smaller than the machine totals. Use the <b>Guest group</b> filter to focus on a region, tier or age band.</p></div>
+  <div class="stats" id="plKpis"></div>
+  <div class="row">
+    <div class="card">
+      <h3>Who carries the losses?</h3>
+      <p class="sub">Guests ranked from biggest loser to biggest winner. Bars show how much each group lost in total.</p>
+      <div class="chart short"><canvas id="cConc" role="img" aria-label="Net losses by player group"></canvas></div>
+      <div class="foot"><span>Source: player_period, summed per guest over the selected months.</span><button class="linkbtn" data-table="cConc">Show numbers</button></div>
+      <div class="datatable" id="t-cConc" hidden></div>
+    </div>
+    <div class="card">
+      <h3>Breakdown by guest group</h3>
+      <div class="seg" id="dimToggle" role="group" aria-label="Breakdown"><button data-dim="region" class="on">Home region</button><button data-dim="tier">Loyalty tier</button><button data-dim="age">Age band</button></div>
+      <div class="tablewrap" style="margin-top:10px"><table id="tGroups"></table></div>
+      <div class="foot"><span>Net = what guests got back minus what they bet. Luck = net result vs. what the game design predicts.</span></div>
+    </div>
+  </div>
+  <div class="analogy"><div class="lbl">In plain terms</div><div>
+    <p>It's like a phone company's data use: most customers use a little, while a small group uses most of the total. The top 10% of carded guests account for more than half of all tracked losses, and about 1 in 6 guests went home ahead. Local guests are 8% of players but carry 57% of the losses.</p>
+    <p class="so">So what: nothing in our plan targets heavy losers to play more. Any guest-facing change should be tested carefully, especially with locals.</p></div></div>
+</section>
+
+<section id="p-comps">
+  <div class="head"><p class="qnum">Question 5 of 6 · What did the comp program cost, and did anything change?</p>
+  <h2>On May 1, free food and drinks started costing guests half as many points</h2>
+  <p class="intro">Comps are the free food and drinks guests buy with loyalty points. The points needed per dollar were cut by about 53% in every tier on May 1. Spending barely moved, but the points guests already hold became twice as costly to honour.</p></div>
+  <div class="stats" id="cpKpis"></div>
+  <div class="row">
+    <div class="card">
+      <h3>Points needed for $1 of comps, each week</h3>
+      <p class="sub">The dashed line is May 1. Always shows the full six months.</p>
+      <div class="legend"><span><i style="background:var(--s1)"></i>Base tier</span><span><i style="background:var(--s3)"></i>Gold tier</span><span><i style="background:var(--s2)"></i>Platinum tier</span></div>
+      <div class="chart"><canvas id="cRedeem" role="img" aria-label="Weekly points per comp dollar by tier"></canvas></div>
+      <div class="foot"><span>Source: loyalty_ledger (redemptions).</span><button class="linkbtn" data-table="cRedeem">Show numbers</button></div>
+      <div class="datatable" id="t-cRedeem" hidden></div>
+    </div>
+    <div class="card">
+      <h3>What comps cost the casino each month</h3>
+      <p class="sub">Real cost of the food and drinks, not their menu price. After the change in maroon.</p>
+      <div class="chart"><canvas id="cCompCost" role="img" aria-label="Monthly comp cost"></canvas></div>
+      <div class="foot"><span>Source: player_period. Comp cost is already inside food cost, so it is counted once.</span><button class="linkbtn" data-table="cCompCost">Show numbers</button></div>
+      <div class="datatable" id="t-cCompCost" hidden></div>
+    </div>
+  </div>
+  <div class="analogy"><div class="lbl">In plain terms</div><div>
+    <p>Picture a coffee shop that changes its loyalty card from "free coffee after 15 stamps" to "free coffee after 7." Few people have cashed in yet, so the shop's costs barely moved. But every stamp already sitting in customers' wallets is now worth twice as much, and the shop owes twice as much if everyone redeems. Visits did not go up after the change.</p>
+    <p class="so">So what: run a small test with a control group before deciding whether to keep the new rate.</p></div></div>
+</section>
+
+<section id="p-forecast">
+  <div class="head"><p class="qnum">Forecast model <span class="pill">Fixed test: ignores filters</span></p>
+  <h2>Knowing the day of the week predicts most of the daily swing</h2>
+  <p class="intro">We built the forecast using January–April only, froze it, then checked it against May–June, which it had never seen. It only uses things known in advance: the weekday, and events already announced by April 30.</p></div>
+  <div class="row wide">
+    <div class="card">
+      <h3>Forecast vs. what actually happened</h3>
+      <div class="legend"><span><i style="background:var(--s1)"></i>Actual</span><span><i style="background:var(--s2)"></i>Weekday + events</span><span><i class="dash" style="--c:var(--s3)"></i>Weekday only</span><span><i class="dash" style="--c:var(--muted)"></i>Flat average (baseline)</span></div>
+      <div class="chart tall"><canvas id="cForecast" role="img" aria-label="Forecast versus actual daily amount bet"></canvas></div>
+      <div class="foot"><span>Source: property_day, events (with announcement dates).</span><button class="linkbtn" data-table="cForecast">Show numbers</button></div>
+      <div class="datatable" id="t-cForecast" hidden></div>
+    </div>
+    <div class="card">
+      <h3>How far off was each forecast? (May 1 – Jun 30)</h3>
+      <div class="tablewrap"><table id="tMae"></table></div>
+      <p class="sub" style="margin-top:12px" id="maeNote"></p>
+      <h3 style="margin-top:14px;font-size:15px">Decision it changes</h3>
+      <p style="font-size:14px;margin:4px 0 0">Schedule technicians and floor staff for weekends and evenings, where an hour of downtime costs about twice as much. Test any promotion on a normally quiet day, so its effect isn't confused with the usual weekend rush.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <h3>Is it a one-off? Testing on 4 different months</h3>
+    <p class="sub">Each month is forecast using only the months before it. We picked our model using March and April only, then confirmed it on May and June, which it had never seen.</p>
+    <div class="legend"><span><i class="box" style="background:var(--context)"></i>Flat average (baseline)</span><span><i class="box" style="background:var(--s3)"></i>Weekday only</span><span><i class="box" style="background:var(--s2)"></i>Weekday + events (ours)</span><span><i class="box" style="background:var(--s1)"></i>Regression</span></div>
+    <div class="chart short"><canvas id="cBacktest" role="img" aria-label="Average daily forecast miss by test month and model"></canvas></div>
+    <p class="means only-simple" id="btSimple"></p>
+    <div class="only-analyst"><div class="tablewrap" style="margin-top:8px"><table id="tBacktest"></table></div><p class="means" id="btAnalyst"></p></div>
+  </div>
+  <div class="card only-analyst" style="margin-bottom:14px">
+    <h3>Error by weekday (test period, May 1 – Jun 30)</h3>
+    <p class="sub">Mean absolute error in dollars per day for each model, and the bias of the chosen model (positive = over-forecast).</p>
+    <div class="tablewrap"><table id="tFcWd"></table></div>
+  </div>
+  <div class="analogy"><div class="lbl">In plain terms</div><div>
+    <p>It's like a weather forecast that mostly says "it's Saturday, expect a crowd." That simple rule cut the average daily miss from about $218k to $69k. Adding big announced events, like the Super Bowl weekend, cut it further. A fancier model isn't needed to staff the floor well.</p></div></div>
+</section>
+
+<section id="p-plan">
+  <div class="head"><p class="qnum">Question 6 of 6 · What should we do with $100,000 (July 1–30)?</p>
+  <h2>Spend $17,500 on three targeted fixes and keep the rest</h2>
+  <p class="intro">Each fix matches a cause we actually found. Bad luck needs no fix, so most of the money is kept. Costs use the catalogue price: <code>quantity × (unit cost + daily cost × days remaining after lead time)</code>.</p></div>
+  <div class="card" style="margin-bottom:14px">
+    <h3>Where the money goes</h3>
+    <div class="budget" id="budgetBar" role="img" aria-label="Budget allocation"></div>
+    <div class="legend" id="budgetLegend"></div>
+  </div>
+  <div class="actions" id="actionCards"></div>
+  <div class="card">
+    <h3>Options we priced and did not fund</h3>
+    <div class="tablewrap"><table id="tRejected"></table></div>
+  </div>
+  <div class="analogy"><div class="lbl">In plain terms</div><div>
+    <p>It's like a sensible doctor's visit. Don't operate on patients who just had a bad week (the unlucky machines). Run the test that confirms a diagnosis (inspect M-1158). Fix the road to the clinic so people can find it (signs for Back Forty). And trial a new prescription on half the patients before giving it to everyone (the comp pilot).</p></div></div>
+</section>
+
+<section id="p-method">
+  <div class="head"><p class="qnum">Appendix</p><h2>How we did it</h2></div>
+  <div class="card only-simple" style="margin-bottom:14px">
+    <h3>How we did it, in four lines</h3>
+    <ul class="plainlist">
+      <li><b>Fair comparison:</b> we only count days a machine was on the floor and working.</li>
+      <li><b>Luck removed:</b> we compare what each machine kept with what its game design says it should keep.</li>
+      <li><b>Too strange to be luck:</b> a machine is flagged only if its results would happen by chance less than 1 time in 700.</li>
+      <li><b>Honest forecast:</b> we built it on January–April and tested it on May–June, which it had never seen.</li>
+    </ul>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <h3>AI use, and how we checked it</h3>
+    <p style="font-size:14px;margin:6px 0 8px"><b>Our ideas:</b> the approach (testing luck vs. location vs. leak before spending), the decision to keep most of the budget, and the user experience of explaining the results to many audiences at once: the story intro and the Simple / Analyst views.</p>
+    <p style="font-size:14px;margin:0 0 8px"><b>Where AI helped:</b> Claude (Anthropic) helped with execution: writing the SQL and Python analysis, fitting and back-testing the forecast models, and coding this dashboard.</p>
+    <p style="font-size:14px;margin:0 0 4px"><b>How we verified it:</b></p>
+    <ul class="plainlist" style="margin-top:0">
+      <li>Recomputed key numbers two independent ways (SQL in DuckDB and this page's code) and confirmed they match, e.g. house win $23.64M, M-1158 luck score −4.6, forecast errors.</li>
+      <li>Checked the money rules: house win = amount bet − payout; every ratio is computed from totals.</li>
+      <li>Sanity checks: the 310 luck scores form the bell curve chance predicts, and the Luck simulator confirms the result a second, independent way.</li>
+      <li>Went through the guide's "common mistakes" list one by one. This caught and fixed a real error: a forecast input that used future information.</li>
+      <li>Tested the forecast on four separate months, chose the model before looking at May–June, and tested every filter combination and screen.</li>
+    </ul>
+  </div>
+  <details class="methodwrap" id="methodDetails"><summary>Full method (definitions, formulas, limits)</summary>
+  <div class="card method">
+    <h4>Money definitions</h4>
+    <p>Amount bet (coin-in) = all wagers including re-bet winnings. House win = amount bet − payout. Expected earnings (theo) = Σ bet × (1 − payback rate). Keep rate (hold) = Σ house win ÷ Σ amount bet. Ratios are always computed from totals, never by averaging daily ratios.</p>
+    <h4>Fair comparisons</h4>
+    <p>Days a machine wasn't installed yet, or was already retired, are left out (not counted as zero). "Per working hour" divides by hours the machine was available, which removes downtime. March 8 had 23 hours (daylight saving); we use actual scheduled seconds.</p>
+    <h4>Luck score</h4>
+    <p>For each spin, the casino's result varies by bet² × the game's payout variance. Adding that up over all spins gives the normal spread for a machine's total. Luck score = (house win − expected earnings) ÷ that spread. Across 310 machines the scores form the bell curve chance produces, except M-1158.</p>
+    <h4>Luck simulator</h4>
+    <p>Each game's payout per spin is modelled as 0 (no win), a regular win, or the top prize, with the three probabilities and sizes solved so the model matches the game's published RTP, payout variance and hit rate exactly. For each replay we draw the number of wins and top prizes for the machine's real number of spins, convert to dollars using its real amount bet, and correct for bet-size spread using Σbet². The share of 1,000 replays at or below the real result is a simulated p-value that does not rely on the bell-curve assumption behind the luck score.</p>
+    <h4>Win-frequency check</h4>
+    <p>The share of spins that pay anything, compared with the game's published hit probability. Over hundreds of thousands of spins, a 7-point gap isn't chance. That makes it a reason to inspect, not proof of a fault or of wrongdoing.</p>
+    <h4>Machine verdicts</h4>
+    <ul>
+      <li><b>Inspect payout</b>: luck score ≤ −3 and wins far more often than the game design.</li>
+      <li><b>Too new to judge</b>: on the floor for less than half the selected days.</li>
+      <li><b>Watch</b>: luck score ≤ −2.5 (about 2 of 310 machines by chance alone).</li>
+      <li><b>Quiet location</b>: earns under 75% of the floor average per working hour, in Back Forty.</li>
+      <li><b>Low-earning game</b>: the same, elsewhere (usually games designed to keep little, like Royal Draw).</li>
+      <li><b>Normal (luck)</b>: everything else.</li>
+    </ul>
+    <h4>Downtime pricing</h4>
+    <p>For each machine-hour with downtime: lost earnings = seconds down × that machine's usual amount bet per working second at that hour × its expected keep rate.</p>
+    <h4>Forecast, without peeking</h4>
+    <p>Trained on Jan 1 – Apr 30, tested on May 1 – Jun 30. Event flags only include events announced by April 30, so Locals Appreciation Week (announced May 26) is not used. City tourism data is published later and is never an input. We also fit a linear regression (weekday dummies, event flag, linear trend; no lagged actuals, since a frozen 61-day forecast cannot see test-period results) and ran a rolling-origin backtest (forecast each of Mar, Apr, May, Jun from the months before it). The model was chosen on the Mar and Apr folds only.</p>
+    <h4>Tracked vs. all play</h4>
+    <p>Player figures cover loyalty-card play only. Concentration, the share of guests ahead, and comp ratios describe carded guests, not everyone.</p>
+    <h4>Limits</h4>
+    <ul>
+      <li>The casino is fictional and its data is synthetic; nothing here describes a real property.</li>
+      <li>Supplied costs are partial (no rent, taxes or depreciation).</li>
+      <li>Action prices are given; their effects are our estimates, with uncertainty stated.</li>
+      <li>LVCVA and Missouri figures are real but published after 2025; context only.</li>
+    </ul>
+    <h4>Reproduce it</h4>
+    <p>Run <code>python analysis/build_dashboard_data.py</code>, then open <code>dashboard/index.html</code>. Every number comes from that script.</p>
+  </div>
+  </details>
+</section>
+</main>
+<aside class="side" aria-label="Filters and help">
+  <div class="panel">
+    <h3>Filters</h3>
+    <label class="fl">From<select id="fFrom"></select></label>
+    <label class="fl">To<select id="fTo"></select></label>
+    <label class="fl">Zone<select id="fZone"></select></label>
+    <label class="fl">Bank<select id="fBank"></select></label>
+    <label class="fl">Guest group<select id="fGroup"></select></label>
+    <button class="btn" id="fReset" type="button">Reset filters</button>
+    <button class="btn" id="themeBtn" type="button" aria-label="Switch colour theme" style="margin-top:8px">☀ Light</button>
+    <p class="hint">Filters update every page except Forecast and the $100k plan, which are fixed.</p>
+  </div>
+  <div class="panel">
+    <h3>The short answer</h3>
+    <p class="ans">Inspect 1 machine. Fix the path to Back Forty. Keep $82.5k.</p>
+    <p>Most low earners are in a quiet spot or brand new, not broken.</p>
+    <a class="more" href="#plan" style="font-size:12px;font-weight:700;color:var(--maroon-ui)">See the plan →</a>
+  </div>
+  <div class="panel only-simple">
+    <h3>Casino words, made simple</h3>
+    <dl class="mini">
+      <dt>Amount bet</dt><dd>Everything guests wagered (coin-in).</dd>
+      <dt>Casino kept</dt><dd>Amount bet minus what machines paid back (house win).</dd>
+      <dt>Payback rate (RTP)</dt><dd>92% RTP means the casino expects to keep 8¢ per $1.</dd>
+      <dt>Expected earnings</dt><dd>What the casino should keep, with luck removed (theo).</dd>
+      <dt>Luck</dt><dd>Casino kept minus expected. Positive = casino was lucky.</dd>
+      <dt>Luck score</dt><dd>−2 to +2 is normal. Below −3 is too unlikely to be chance.</dd>
+    </dl>
+  </div>
+  <div class="panel only-analyst">
+    <h3>Definitions and formulas</h3>
+    <dl class="mini">
+      <dt>Theo</dt><dd><code>Σ bet × (1 − RTP)</code></dd>
+      <dt>Luck</dt><dd><code>house win − theo</code></dd>
+      <dt>Luck z</dt><dd><code>luck ÷ √Σ(bet² × payout variance)</code></dd>
+      <dt>Hit-rate z</dt><dd><code>(p̂ − p) ÷ √(p(1 − p) ÷ n)</code></dd>
+      <dt>Hold</dt><dd><code>Σ house win ÷ Σ coin-in</code> (ratio of sums)</dd>
+      <dt>Exposure</dt><dd>Active machine-days only; per available hour.</dd>
+      <dt>MAE</dt><dd><code>mean |actual − forecast|</code>, May–Jun holdout</dd>
+    </dl>
+  </div>
+</aside>
+</div>
+<footer class="wrap"><b>Luck or Leak</b> · The Gilded Ace is a fictional casino with synthetic data (release 0.9.0-draft), built for the TAMU Datathon 2026 Dashboard Royale challenge. Real context data: LVCVA, NOAA, Missouri Gaming Commission.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+"use strict";
+const D = window.DATA;
+if (!D || !window.Chart) { document.querySelector("main").insertAdjacentHTML("afterbegin", '<p class="callout">Could not load data.js or the chart library. Run <code>python analysis/build_dashboard_data.py</code> and check your internet connection.</p>'); return; }
+
+const rows = c => { const k = Object.keys(c), n = c[k[0]].length, out = new Array(n); for (let i = 0; i < n; i++) { const o = {}; for (const key of k) o[key] = c[key][i]; out[i] = o; } return out; };
+const sum = (a, f) => a.reduce((s, r) => s + (f(r) || 0), 0);
+const groupBy = (a, f) => { const m = new Map(); for (const r of a) { const k = f(r); if (!m.has(k)) m.set(k, []); m.get(k).push(r); } return m; };
+const money = (v, dp) => { if (v == null || !isFinite(v)) return "–"; const a = Math.abs(v), s = v < 0 ? "−" : ""; if (a >= 1e6) return s + "$" + (a / 1e6).toFixed(dp ?? 2) + "M"; if (a >= 1e4) return s + "$" + (a / 1e3).toFixed(a < 1e5 ? 1 : 0).replace(/\.0$/, "") + "k"; if (a >= 1e3) return s + "$" + (a / 1e3).toFixed(1) + "k"; return s + "$" + a.toFixed(a < 100 ? 2 : 0); };
+const pct = (v, dp = 1) => v == null || !isFinite(v) ? "–" : (v * 100).toFixed(dp) + "%";
+const num = (v, dp = 0) => v == null || !isFinite(v) ? "–" : v.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp });
+const signed = (v, f) => (v > 0 ? "+" : "") + f(v);
+const MON = { "12": "Dec", "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun", "07": "Jul" };
+const monLabel = m => MON[m.slice(5, 7)] + " " + m.slice(0, 4);
+const dayLabel = d => MON[d.slice(5, 7)] + " " + (+d.slice(8, 10));
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const el = id => document.getElementById(id);
+function h(tag, attrs, ...kids) { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs || {})) { if (k === "class") e.className = v; else if (k === "style") e.style.cssText = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v); } for (const c of kids) if (c != null) e.append(c instanceof Node ? c : document.createTextNode(String(c))); return e; }
+function rolling(a, w) { return a.map((_, i) => { const s = a.slice(Math.max(0, i - w + 1), i + 1).filter(v => v != null); return s.length ? s.reduce((x, y) => x + y, 0) / s.length : null; }); }
+
+const BANKS = rows(D.banks), ZONES = rows(D.zones);
+const bankZone = Object.fromEntries(BANKS.map(b => [b.bank, b.zone]));
+const zoneName = Object.fromEntries(ZONES.map(z => [z.zone, z.name]));
+const BD = rows(D.bankDay); BD.forEach(r => { r.mo = r.d.slice(0, 7); r.z = bankZone[r.b]; });
+const MACH = Object.fromEntries(rows(D.machines).map(m => [m.m, m]));
+const MM = rows(D.mm); MM.forEach(r => { r.z = bankZone[r.b]; r.mfr = MACH[r.m].mfr; });
+const DAYS = rows(D.days); const dayInfo = Object.fromEntries(DAYS.map(d => [d.d, d]));
+const EVENTS = rows(D.events), WALK = rows(D.walkways), ZD = rows(D.zoneDay);
+const FAULTS = rows(D.faults), TECH = rows(D.techMonth), PG = rows(D.players), RW = rows(D.redeemWeek);
+const CITY = rows(D.city), BENCH = rows(D.bench);
+const MONTHS = D.meta.months, BOTTOM = D.bottom10, EVID = D.evidence;
+const closure = WALK.find(w => w.s);
+const MFRS = ["Ridgeline", "Halcyon", "Northwind"];
+
+const state = { from: MONTHS[0], to: MONTHS[MONTHS.length - 1], zone: "all", bank: "all", group: "all|All", dim: "region", theme: "all", sort: { key: "tpa", dir: 1 }, showAll: false, search: "" };
+const inP = mo => mo >= state.from && mo <= state.to;
+const placeOk = b => (state.zone === "all" || bankZone[b] === state.zone) && (state.bank === "all" || b === state.bank);
+function fillSelect(sel, opts, val) { sel.textContent = ""; for (const [v, t] of opts) sel.append(h("option", { value: v }, t)); sel.value = val; }
+function initFilters() {
+  fillSelect(el("fFrom"), MONTHS.map(m => [m, monLabel(m)]), state.from);
+  fillSelect(el("fTo"), MONTHS.map(m => [m, monLabel(m)]), state.to);
+  fillSelect(el("fZone"), [["all", "Whole floor"], ...ZONES.map(z => [z.zone, z.name])], state.zone);
+  fillBanks();
+  const g = [["all|All", "All carded guests"]];
+  const vals = { region: new Set(), tier: new Set(), age: new Set() };
+  PG.forEach(r => { vals.region.add(r.region); vals.tier.add(r.tier); vals.age.add(r.age); });
+  const lab = { region: "Region", tier: "Tier", age: "Age" };
+  for (const dim of ["region", "tier", "age"]) [...vals[dim]].sort().forEach(v => g.push([dim + "|" + v, lab[dim] + ": " + v]));
+  fillSelect(el("fGroup"), g, state.group);
+  el("fFrom").onchange = e => { state.from = e.target.value; if (state.to < state.from) { state.to = state.from; el("fTo").value = state.to; } render(); };
+  el("fTo").onchange = e => { state.to = e.target.value; if (state.from > state.to) { state.from = state.to; el("fFrom").value = state.from; } render(); };
+  el("fZone").onchange = e => { state.zone = e.target.value; state.bank = "all"; fillBanks(); render(); };
+  el("fBank").onchange = e => { state.bank = e.target.value; render(); };
+  el("fGroup").onchange = e => { state.group = e.target.value; render(); };
+  el("fReset").onclick = () => { Object.assign(state, { from: MONTHS[0], to: MONTHS[MONTHS.length - 1], zone: "all", bank: "all", group: "all|All" }); initFilters(); render(); };
+}
+function fillBanks() {
+  const bs = BANKS.filter(b => state.zone === "all" || b.zone === state.zone);
+  fillSelect(el("fBank"), [["all", "All banks"], ...bs.map(b => [b.bank, b.bank + (state.zone === "all" ? " · " + b.zone_name : "")])], state.bank);
+}
+function setPlace(zone, bank) { state.zone = zone; state.bank = bank; el("fZone").value = zone; fillBanks(); el("fBank").value = bank; render(); }
+
+const charts = {};
+let T = {};
+function readTheme() { T = { ink: css("--ink"), ink2: css("--ink2"), muted: css("--muted"), grid: css("--grid"), axis: css("--axis"), card: css("--card"), band: css("--band"), s1: css("--s1"), s2: css("--s2"), s3: css("--s3"), ctx: css("--context"), seq: [1, 2, 3, 4, 5].map(i => css("--seq" + i)) }; }
+const FONT = "'Open Sans', system-ui, sans-serif";
+const bandsPlugin = {
+  id: "bands",
+  beforeDatasetsDraw(chart, _a, opts) {
+    const { ctx, chartArea: ca, scales: { x } } = chart; if (!opts || !opts.items) return;
+    const labels = chart.data.labels || [];
+    for (const b of opts.items) {
+      const i0 = labels.indexOf(b.from), i1 = labels.indexOf(b.to);
+      if (i0 < 0 && i1 < 0) continue;
+      const x0 = i0 < 0 ? ca.left : x.getPixelForValue(i0), x1 = i1 < 0 ? ca.right : x.getPixelForValue(i1);
+      ctx.save();
+      if (b.line) { ctx.strokeStyle = T.ink2; ctx.setLineDash([4, 3]); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, ca.top); ctx.lineTo(x0, ca.bottom); ctx.stroke(); }
+      else { ctx.fillStyle = b.color || T.band; ctx.fillRect(x0, ca.top, Math.max(1, x1 - x0), ca.bottom - ca.top); }
+      if (b.label) { ctx.fillStyle = T.ink2; ctx.font = "600 11px " + FONT; ctx.textBaseline = "top"; ctx.fillText(b.label, x0 + 5, ca.top + 5); }
+      ctx.restore();
+    }
+  }
+};
+const hlinesPlugin = {
+  id: "hlines",
+  beforeDatasetsDraw(chart, _a, opts) {
+    if (!opts || !opts.items) return; const { ctx, chartArea: ca, scales: { y } } = chart;
+    for (const l of opts.items) { const py = y.getPixelForValue(l.y); if (py < ca.top || py > ca.bottom) continue; ctx.save(); ctx.strokeStyle = l.color || T.muted; ctx.setLineDash(l.dash || [4, 4]); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(ca.left, py); ctx.lineTo(ca.right, py); ctx.stroke(); if (l.label) { ctx.fillStyle = T.muted; ctx.font = "11px " + FONT; ctx.textAlign = "right"; ctx.fillText(l.label, ca.right - 4, py - 5); } ctx.restore(); }
+  }
+};
+const crosshairPlugin = {
+  id: "crosshair",
+  afterDatasetsDraw(chart) {
+    if (chart.config.type !== "line") return;
+    const act = chart.tooltip && chart.tooltip.getActiveElements(); if (!act || !act.length) return;
+    const { ctx, chartArea: ca } = chart, x = act[0].element.x;
+    ctx.save(); ctx.strokeStyle = T.axis; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, ca.top); ctx.lineTo(x, ca.bottom); ctx.stroke(); ctx.restore();
+  }
+};
+const pointLabelPlugin = {
+  id: "pointLabels",
+  afterDatasetsDraw(chart, _a, opts) {
+    if (!opts || !opts.ids) return; const { ctx } = chart;
+    chart.data.datasets.forEach((ds, di) => { const meta = chart.getDatasetMeta(di); if (meta.hidden) return; ds.data.forEach((p, i) => { if (p && opts.ids.includes(p.id)) { const e = meta.data[i]; const txt = p.id + " (inspect)"; ctx.save(); ctx.font = "700 12px " + FONT; ctx.lineWidth = 4; ctx.lineJoin = "round"; ctx.strokeStyle = T.card; ctx.strokeText(txt, e.x + 11, e.y + 4); ctx.fillStyle = T.ink; ctx.fillText(txt, e.x + 11, e.y + 4); ctx.restore(); } }); });
+  }
+};
+Chart.register(bandsPlugin, hlinesPlugin, crosshairPlugin, pointLabelPlugin);
+Chart.defaults.font.family = FONT;
+
+function merge(a, b) { for (const k in b) { if (b[k] && typeof b[k] === "object" && !Array.isArray(b[k]) && !(b[k] instanceof Function)) { a[k] = merge(a[k] || {}, b[k]); } else a[k] = b[k]; } return a; }
+function baseOpts(extra) {
+  return merge({
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: "index", intersect: false },
+    layout: { padding: { top: 4, right: 8 } },
+    plugins: {
+      legend: { display: false },
+      tooltip: { backgroundColor: T.ink, titleColor: T.card, bodyColor: T.card, footerColor: T.card, padding: 10, cornerRadius: 4, boxWidth: 12, boxHeight: 2, titleFont: { weight: "400" }, bodyFont: { weight: "600" } }
+    },
+    scales: {
+      x: { grid: { display: false }, border: { color: T.axis }, ticks: { color: T.muted, maxRotation: 0, autoSkip: true, autoSkipPadding: 14, maxTicksLimit: 8, font: { size: 11 } } },
+      y: { grid: { color: T.grid }, border: { display: false }, ticks: { color: T.muted, font: { size: 11 }, maxTicksLimit: 6 } }
+    }
+  }, extra || {});
+}
+function mk(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart(el(id), cfg); const t = el("t-" + id); if (t && !t.hidden) buildDataTable(id); return charts[id]; }
+function buildDataTable(id) {
+  const c = charts[id], box = el("t-" + id); if (!c || !box) return;
+  const tbl = h("table"); const ds = c.data.datasets;
+  const first = ds[0] && ds[0].data[0];
+  if (first && typeof first === "object" && "x" in first) {
+    tbl.append(h("thead", {}, h("tr", {}, h("th", {}, "Group"), h("th", {}, "Item"), h("th", { class: "num" }, c.$xName || "x"), h("th", { class: "num" }, c.$yName || "y"))));
+    const tb = h("tbody"); ds.forEach(d => d.data.forEach(p => tb.append(h("tr", {}, h("td", {}, d.label), h("td", {}, p.id || ""), h("td", { class: "num" }, num(p.x, 2)), h("td", { class: "num" }, num(p.y, 2)))))); tbl.append(tb);
+  } else {
+    tbl.append(h("thead", {}, h("tr", {}, h("th", {}, ""), ...ds.map(d => h("th", { class: "num" }, d.label)))));
+    const tb = h("tbody"); (c.data.labels || []).forEach((lab, i) => tb.append(h("tr", {}, h("td", {}, lab), ...ds.map(d => h("td", { class: "num" }, d.data[i] == null ? "–" : num(d.data[i], Math.abs(d.data[i]) < 100 ? 2 : 0)))))); tbl.append(tb);
+  }
+  box.textContent = ""; box.append(tbl);
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-table]"); if (!b) return; const id = b.dataset.table, box = el("t-" + id); box.hidden = !box.hidden; b.textContent = box.hidden ? "Show numbers" : "Hide numbers"; if (!box.hidden) buildDataTable(id); });
+const yMoney = { ticks: { callback: v => money(v, 1) } };
+const dateTicks = { ticks: { callback: function (v) { return dayLabel(this.getLabelForValue(v)); } } };
+const line = (label, data, color, extra) => Object.assign({ label, data, borderColor: color, backgroundColor: color, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.25, spanGaps: true }, extra || {});
+const bar = (label, data, color, extra) => Object.assign({ label, data, backgroundColor: color, borderRadius: 4, borderSkipped: "start", maxBarThickness: 44 }, extra || {});
+
+function machineAgg(usePlace, from, to) {
+  const f = from || state.from, t = to || state.to;
+  const m = new Map();
+  for (const r of MM) {
+    if (r.mo < f || r.mo > t || (usePlace && !placeOk(r.b))) continue;
+    let a = m.get(r.m); if (!a) { a = { m: r.m, days: 0, cin: 0, hw: 0, theo: 0, var: 0, av: 0, sc: 0, oc: 0, sp: 0, ps: 0, lt: 0, lastMo: "", b: r.b }; m.set(r.m, a); }
+    for (const k of ["days", "cin", "hw", "theo", "var", "av", "sc", "oc", "sp", "ps", "lt"]) a[k] += r[k];
+    if (r.mo >= a.lastMo) { a.lastMo = r.mo; a.b = r.b; }
+  }
+  const out = [...m.values()];
+  for (const a of out) {
+    const info = MACH[a.m]; Object.assign(a, { theme: info.theme, mfr: info.mfr, vol: info.vol, rtp: info.rtp, hitp: info.hitp });
+    a.z = a.var > 0 ? (a.hw - a.theo) / Math.sqrt(a.var) : 0;
+    a.zone = bankZone[a.b]; a.tpa = a.av > 0 ? a.theo / a.av : 0; a.avail = a.sc > 0 ? a.av / a.sc : null;
+    a.hold = a.cin > 0 ? a.hw / a.cin : null; a.thold = a.cin > 0 ? a.theo / a.cin : null;
+    a.hit = a.sp > 0 ? a.ps / a.sp : null; a.hitZ = a.sp > 0 ? (a.hit - a.hitp) / Math.sqrt(a.hitp * (1 - a.hitp) / a.sp) : 0;
+  }
+  return out;
+}
+function periodDays(f, t) { f = f || state.from; t = t || state.to; return DAYS.filter(d => { const m = d.d.slice(0, 7); return m >= f && m <= t; }).length; }
+function floorTpa(f, t) { f = f || state.from; t = t || state.to; const r = BD.filter(x => x.mo >= f && x.mo <= t); return sum(r, x => x.theo) / sum(r, x => x.av); }
+function verdict(a, ref, nDays) {
+  if (a.z <= -3 && a.hitZ > 5) return ["Inspect payout", "critical", "inspect"];
+  if (a.days < nDays * 0.5) return ["Too new to judge", "info", "new"];
+  if (a.z <= -2.5) return ["Watch", "warning", "watch"];
+  if (a.tpa < 0.75 * ref) return a.zone === "Z-B40" ? ["Quiet location", "serious", "location"] : ["Low-earning game", "neutral", "game"];
+  return ["Normal (luck)", "good", "luck"];
+}
+function dailyPlace() {
+  const m = new Map();
+  for (const r of BD) { if (!inP(r.mo) || !placeOk(r.b)) continue; let a = m.get(r.d); if (!a) { a = { d: r.d, cin: 0, hw: 0, theo: 0, av: 0, sc: 0, oc: 0, f: 0, dh: 0, lt: 0 }; m.set(r.d, a); } for (const k of ["cin", "hw", "theo", "av", "sc", "oc", "f", "dh", "lt"]) a[k] += r[k]; }
+  return [...m.values()].sort((a, b) => a.d < b.d ? -1 : 1);
+}
+function scopeText() {
+  const p = state.from === state.to ? monLabel(state.from) : monLabel(state.from) + " – " + monLabel(state.to);
+  const place = state.bank !== "all" ? "bank " + state.bank + " (" + zoneName[bankZone[state.bank]] + ")" : state.zone !== "all" ? zoneName[state.zone] : "whole floor";
+  return p + ", " + place;
+}
+function stat(label, value, foot, key) { return h("div", { class: "stat" + (key ? " key" : "") }, h("div", { class: "label" }, label), h("div", { class: "value" }, value), h("div", { class: "foot" }, foot)); }
+
+function renderBuckets() {
+  const f = MONTHS[0], t = MONTHS[MONTHS.length - 1];
+  const ref = floorTpa(f, t), n = periodDays(f, t);
+  const b10 = machineAgg(false, f, t).filter(a => BOTTOM.includes(a.m)).sort((a, b) => a.hw - b.hw);
+  const groups = { inspect: [], location: [], new: [], other: [] };
+  b10.forEach(a => { const v = verdict(a, ref, n)[2]; (groups[v] || groups.other).push(a); });
+  const m1118 = b10.find(a => a.m === "M-1118");
+  const defs = [
+    { k: "inspect", color: "var(--critical)", title: "Inspect before deciding", text: "Pays out wins far more often than its design, every month. About $36k below expected. A technician should check its settings." },
+    { k: "location", color: "var(--s1)", title: "Fine machine, quiet spot", text: "All in Back Forty, the least-visited corner. Their luck is normal; the same games earn 30–45% more elsewhere. A new machine here would face the same empty aisle." },
+    { k: "new", color: "var(--s2)", title: "Too new to judge", text: "On the floor only about 50 days, so their totals look small. " + (m1118 ? "M-1118 actually earns $" + m1118.tpa.toFixed(0) + " per working hour, above the floor average." : "") }
+  ];
+  const box = el("buckets"); box.textContent = "";
+  for (const d of defs) {
+    const list = groups[d.k]; if (!list.length) continue;
+    box.append(h("div", { class: "bucket", style: "--bc:" + d.color }, h("div", { class: "count" }, list.length), h("h3", {}, d.title), h("p", {}, d.text), h("div", { class: "ids" }, ...list.map(a => h("span", {}, a.m)))));
+  }
+  if (groups.other.length) box.append(h("div", { class: "bucket" }, h("div", { class: "count" }, groups.other.length), h("h3", {}, "Other"), h("div", { class: "ids" }, ...groups.other.map(a => h("span", {}, a.m)))));
+}
+
+function bottomCounts() {
+  const f = MONTHS[0], t = MONTHS[MONTHS.length - 1], ref = floorTpa(f, t), n = periodDays(f, t);
+  const out = { inspect: 0, location: 0, new: 0, other: 0 };
+  machineAgg(false, f, t).filter(a => BOTTOM.includes(a.m)).forEach(a => { const k = verdict(a, ref, n)[2]; out[k in out ? k : "other"]++; });
+  return out;
+}
+function donut(id, labels, data, colors, fmt) {
+  mk(id, { type: "doughnut", data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: T.card, borderWidth: 2, hoverOffset: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, animation: false, cutout: "62%", layout: { padding: 4 },
+      plugins: {
+        legend: { position: "bottom", labels: { color: T.ink2, boxWidth: 10, boxHeight: 10, padding: 12, font: { size: 12 },
+          generateLabels: ch => ch.data.labels.map((l, i) => ({ text: l + "  " + fmt(ch.data.datasets[0].data[i]), fillStyle: colors[i], strokeStyle: colors[i], lineWidth: 0, index: i, fontColor: T.ink2 })) } },
+        tooltip: { backgroundColor: T.ink, titleColor: T.card, bodyColor: T.card, callbacks: { label: c => " " + c.label + ": " + fmt(c.raw) } } } } });
+}
+function renderOverview() {
+  el("ovScope").textContent = "Charts and tiles show: " + scopeText() + (state.group !== "all|All" ? ", " + el("fGroup").selectedOptions[0].textContent : "") + ".";
+  const d = dailyPlace();
+  const cin = sum(d, x => x.cin), hw = sum(d, x => x.hw), th = sum(d, x => x.theo), av = sum(d, x => x.av), sc = sum(d, x => x.sc), lt = sum(d, x => x.lt);
+  const [dim, v] = state.group.split("|"); const c = D.conc[state.from + "|" + state.to + "|" + dim + "|" + v];
+  const top10 = c ? -(c.parts[0] + c.parts[1]) / c.losses : null;
+  const M = D.forecast.mae, bc = bottomCounts();
+  const AN = state.view === "analyst";
+  let zOut = 0; if (AN) { const fa = machineAgg(false, MONTHS[0], MONTHS[MONTHS.length - 1]); zOut = fa.filter(a => Math.abs(a.z) >= 3).length; }
+  const tiles = AN ? [
+    ["#machines", "c1", "House win vs. theo", money(hw), "theo " + money(th) + " · luck " + signed(hw - th, money)],
+    ["#floor", "c2", "Coin-in", money(cin), num(d.length) + " gaming days"],
+    ["#machines", "c3", "Hold vs. theo hold", pct(hw / cin, 2), "theo hold " + pct(th / cin, 2)],
+    ["#downtime", "c4", "Availability", pct(av / sc, 2), num(sc - av) + " machine-hours down"],
+    ["#machines", "c1", "Machines with |z| ≥ 3", zOut + " of 310", "≈" + (310 * 0.0027).toFixed(1) + " expected by chance (Jan–Jun)"],
+    ["#downtime", "c2", "Lost theo (downtime)", money(lt), pct(lt / th, 2) + " of theo"],
+    ["#players", "c3", "Top-decile share of losses", top10 == null ? "–" : pct(top10, 1), c ? pct(c.ahead, 1) + " of tracked players ahead" : ""],
+    ["#forecast", "c4", "MAE reduction vs. baseline", pct(1 - M.p_dowev / M.p_const, 0), money(M.p_dowev) + " vs. " + money(M.p_const) + " per day"]
+  ] : [
+    ["#machines", "c1", "Casino kept", money(hw), "Luck: " + signed(hw - th, money) + " vs. expected"],
+    ["#floor", "c2", "Amount bet", money(cin), "over " + num(d.length) + " days"],
+    ["#machines", "c3", "Keep rate", pct(hw / cin, 2), "designed " + pct(th / cin, 2)],
+    ["#downtime", "c4", "Machines working", pct(av / sc, 2), "of scheduled hours"],
+    ["#machines", "c1", "Machines to inspect", bc.inspect + " of 10", "M-1158 pays wins too often"],
+    ["#downtime", "c2", "Lost to breakdowns", money(lt), pct(lt / th, 2) + " of expected earnings"],
+    ["#players", "c3", "Losses from top 10% of guests", top10 == null ? "–" : pct(top10, 0), c ? "about 1 in " + Math.round(1 / c.ahead) + " guests went home ahead" : ""],
+    ["#forecast", "c4", "Forecast miss cut", pct(1 - M.p_dowev / M.p_const, 0), "vs. a flat-average guess"]
+  ];
+  const box = el("tiles"); box.textContent = "";
+  for (const [href, cls, l, val, f] of tiles) box.append(h("a", { class: "kt " + cls, href }, h("div", { class: "l" }, l), h("div", { class: "v" }, val), h("div", { class: "f" }, f)));
+
+  mk("cOverview", { type: "line", data: { labels: d.map(x => x.d), datasets: [line("Actually kept", d.map(x => x.hw), T.s1, { borderWidth: 1.5, tension: 0 }), line("Expected to keep", d.map(x => x.theo), T.s2)] },
+    options: baseOpts({ scales: { y: yMoney, x: dateTicks }, plugins: { tooltip: { callbacks: { title: i => dayLabel(i[0].label) + " (" + dayInfo[i[0].label].wd + ")" + (dayInfo[i[0].label].ev ? " · " + dayInfo[i[0].label].ev : ""), label: c => " " + money(c.raw) + "  " + c.dataset.label } } } }) });
+
+  donut("cOvVerdict", ["Quiet location", "Too new to judge", "Inspect payout"], [bc.location, bc.new, bc.inspect], [T.s2, T.ctx, css("--critical")], v => v + (v === 1 ? " machine" : " machines"));
+
+  const zs = new Map();
+  for (const r of MM) { if (!inP(r.mo)) continue; let a = zs.get(r.z); if (!a) { a = { theo: 0, av: 0 }; zs.set(r.z, a); } a.theo += r.theo; a.av += r.av; }
+  const zl = ZONES.map(z => ({ z: z.zone, name: z.name, v: zs.get(z.zone) && zs.get(z.zone).av ? zs.get(z.zone).theo / zs.get(z.zone).av : null })).filter(z => z.v != null).sort((a, b) => a.v - b.v);
+  const hiZone = state.zone !== "all" ? state.zone : "Z-B40";
+  mk("cOvZone", { type: "bar", data: { labels: zl.map(z => z.name), datasets: [bar("Expected per working hour", zl.map(z => z.v), zl.map(z => z.z === hiZone ? T.s1 : T.ctx))] },
+    options: baseOpts({ indexAxis: "y", interaction: { mode: "nearest", intersect: true, axis: "y" }, scales: { x: { grid: { display: true, color: T.grid }, ticks: { callback: v => "$" + v } }, y: { grid: { display: false }, border: { color: T.axis }, ticks: { autoSkip: false } } },
+      plugins: { tooltip: { callbacks: { label: c => " $" + c.raw.toFixed(2) + " per working hour" } } },
+      onClick: (_e, els) => { if (!els.length) return; const z = zl[els[0].index].z; setPlace(state.zone === z ? "all" : z, "all"); } }) });
+
+  const lostBy = {}; for (const r of MM) { if (!inP(r.mo) || !placeOk(r.b)) continue; lostBy[r.mfr] = (lostBy[r.mfr] || 0) + r.lt; }
+  donut("cOvBrand", MFRS, MFRS.map(m => lostBy[m] || 0), [T.s1, T.s2, T.s3], v => money(v));
+
+  const F = rows(D.forecast.rows).filter(r => r.split === "test");
+  mk("cOvFc", { type: "line", data: { labels: F.map(r => r.d), datasets: [line("Actual", F.map(r => r.cin), T.s1, { tension: 0 }), line("Our forecast", F.map(r => r.p_dowev), T.s2, { tension: 0 }), line("Flat average", F.map(r => r.p_const), T.muted, { tension: 0, borderDash: [2, 3], borderWidth: 1.5 })] },
+    options: baseOpts({ scales: { y: yMoney, x: dateTicks }, plugins: { tooltip: { callbacks: { title: i => dayLabel(i[0].label) + " (" + dayInfo[i[0].label].wd + ")", label: c => " " + money(c.raw) + "  " + c.dataset.label } } } }) });
+
+  const A = Object.fromEntries(rows(D.actions).map(a => [a.id, a]));
+  const parts = [5 * A["A-INSPECT"].unit_cost, A["A-WAYFINDING"].unit_cost, A["A-COMP-PILOT"].unit_cost];
+  donut("cOvBudget", ["Inspect 5 machines", "Back Forty signs", "Comp test", "Kept"], [...parts, 100000 - parts.reduce((a, b) => a + b, 0)], [T.s1, T.s2, T.s3, css("--track")], v => money(v));
+}
+
+function renderMachines() {
+  const nDays = periodDays(), ref = floorTpa();
+  const all = machineAgg(true).filter(a => a.av > 0);
+  const isB = new Set(BOTTOM);
+  const pt = a => ({ x: a.tpa, y: a.z, id: a.m, zone: a.zone, theme: a.theme });
+  const ch = mk("cScatter", { type: "scatter", data: { datasets: [
+      { label: "Management's 10", data: all.filter(a => isB.has(a.m)).map(pt), pointRadius: 8, pointHoverRadius: 9, backgroundColor: "transparent", borderColor: T.ink, borderWidth: 2, order: 0 },
+      { label: "Back Forty", data: all.filter(a => a.zone === "Z-B40").map(pt), pointRadius: 4.5, pointHoverRadius: 6, backgroundColor: T.s1, borderColor: T.card, borderWidth: 1, order: 1 },
+      { label: "Rest of the floor", data: all.filter(a => a.zone !== "Z-B40").map(pt), pointRadius: 4.5, pointHoverRadius: 6, backgroundColor: T.ctx, borderColor: T.card, borderWidth: 1, order: 2 }
+    ] },
+    options: baseOpts({ interaction: { mode: "nearest", intersect: false, axis: "xy" },
+      scales: { x: { type: "linear", title: { display: true, text: "Expected earnings per working hour", color: T.muted }, ticks: { maxTicksLimit: 8, callback: v => "$" + v }, grid: { display: true, color: T.grid } }, y: { title: { display: true, text: "Luck score (0 = normal)", color: T.muted }, suggestedMin: -5, suggestedMax: 3 } },
+      plugins: { hlines: { items: [{ y: 3, label: "very lucky" }, { y: -3, label: "too unlucky to be chance" }, { y: 0, dash: [1, 0], color: T.axis }] }, pointLabels: { ids: ["M-1158"] },
+        tooltip: { callbacks: { title: i => i[0].raw.id + " · " + i[0].raw.theme, label: c => [" " + zoneName[c.raw.zone], " $" + c.raw.x.toFixed(2) + " expected per working hour", " luck score " + c.raw.y.toFixed(2)] } } },
+      onClick: (_e, els, chart) => { if (!els.length) return; const p = chart.data.datasets[els[0].datasetIndex].data[els[0].index]; el("mSearch").value = p.id; state.search = p.id; renderMachineTable(all, nDays, ref); el("tMachines").scrollIntoView({ block: "nearest" }); }
+    }) });
+  ch.$xName = "$ per working hour"; ch.$yName = "Luck score";
+
+  const b10 = machineAgg(false).filter(a => isB.has(a.m)).sort((a, b) => a.hw - b.hw);
+  const t = el("tBottom"); t.textContent = "";
+  t.append(h("thead", {}, h("tr", {}, h("th", {}, "Machine"), h("th", {}, "Where · game"), h("th", { class: "num" }, "Days"), h("th", { class: state.view === "analyst" ? "num" : "" }, state.view === "analyst" ? "Luck z" : "Luck"), h("th", { class: "num" }, "$ / working hr"), h("th", {}, "Verdict"))));
+  const tb = h("tbody");
+  for (const a of b10) { const [v, c] = verdict(a, ref, nDays); tb.append(h("tr", {}, h("td", {}, h("b", {}, a.m)), h("td", { class: "wrap" }, zoneName[a.zone] + " · " + a.theme), h("td", { class: "num" }, a.days), (state.view === "analyst" ? h("td", { class: "num" }, a.z.toFixed(1)) : h("td", {}, luckWord(a.z))), h("td", { class: "num" }, "$" + a.tpa.toFixed(2)), h("td", {}, h("span", { class: "chip " + c }, v)))); }
+  if (!b10.length) tb.append(h("tr", {}, h("td", { colspan: 6, class: "muted" }, "None of the 10 were on the floor in this period.")));
+  t.append(tb);
+
+  const m58 = machineAgg(false).find(a => a.m === "M-1158");
+  const co = el("leakCallout"); co.textContent = "";
+  if (m58) co.append(h("span", { class: "chip critical", style: "margin-right:8px" }, "Needs a check"), h("b", {}, "M-1158 (Desert Gold, Back Forty). "), "It pays a win on " + pct(m58.hit, 1) + " of spins when its design says " + pct(m58.hitp, 1) + ", and kept " + pct(m58.hold, 1) + " of bets instead of the designed " + pct(m58.thold, 0) + ". That is " + money(m58.theo - m58.hw) + " below expected in the selected period, and it was working " + pct(m58.avail, 1) + " of the time, so breakdowns aren't the reason. This points to a settings difference worth checking. It is not proof of a fault or of wrongdoing.");
+  renderMachineTable(all, nDays, ref);
+  if (state.view === "analyst") renderAnalystMachines(all);
+  renderSim();
+}
+function erf(x) { const t = 1 / (1 + 0.3275911 * Math.abs(x)); const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; }
+const Phi = x => x === Infinity ? 1 : x === -Infinity ? 0 : 0.5 * (1 + erf(x / Math.SQRT2));
+function renderAnalystMachines(all) {
+  const edges = [-Infinity, -3, -2, -1, 0, 1, 2, 3, Infinity];
+  const labels = ["below −3", "−3 to −2", "−2 to −1", "−1 to 0", "0 to 1", "1 to 2", "2 to 3", "above 3"];
+  const obs = labels.map((_, i) => all.filter(a => a.z >= edges[i] && a.z < edges[i + 1]).length);
+  const exp = labels.map((_, i) => all.length * (Phi(edges[i + 1]) - Phi(edges[i])));
+  mk("cZHist", { type: "bar", data: { labels, datasets: [bar("Machines (observed)", obs, T.s1), { type: "line", label: "Expected by chance", data: exp, borderColor: T.s2, backgroundColor: T.s2, borderWidth: 2, pointRadius: 3, tension: 0.35 }] },
+    options: baseOpts({ plugins: { tooltip: { callbacks: { label: c => " " + c.dataset.label + ": " + (c.datasetIndex ? c.raw.toFixed(1) : c.raw) } } } }) });
+  const top = all.slice().sort((a, b) => Math.abs(b.hitZ) - Math.abs(a.hitZ)).slice(0, 10);
+  const t = el("tHit"); t.textContent = "";
+  t.append(h("thead", {}, h("tr", {}, h("th", {}, "Machine"), h("th", {}, "Game"), h("th", { class: "num" }, "Paid spins"), h("th", { class: "num" }, "Hit rate"), h("th", { class: "num" }, "Spec"), h("th", { class: "num" }, "Hit-rate z"), h("th", { class: "num" }, "Luck z"))));
+  const tb = h("tbody");
+  top.forEach(a => tb.append(h("tr", { class: Math.abs(a.hitZ) > 5 ? "hl" : "" }, h("td", {}, h("b", {}, a.m)), h("td", {}, a.theme), h("td", { class: "num" }, num(a.sp)), h("td", { class: "num" }, pct(a.hit, 2)), h("td", { class: "num" }, pct(a.hitp, 2)), h("td", { class: "num" }, a.hitZ.toFixed(1)), h("td", { class: "num" }, a.z.toFixed(2)))));
+  t.append(tb);
+}
+// ---- Luck simulator: Monte Carlo replays of a fair machine with the same game and play volume
+function gaussian() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+function poisson(lam) { if (lam > 50) return Math.max(0, Math.round(lam + Math.sqrt(lam) * gaussian())); const L = Math.exp(-lam); let k = 0, p = 1; do { k++; p *= Math.random(); } while (p > L); return k - 1; }
+function binom(n, p) { if (p <= 0) return 0; if (p >= 1) return n; const m = n * p; if (m < 50) return Math.min(n, poisson(m)); if (n - m < 50) return n - Math.min(n, poisson(n - m)); return Math.min(n, Math.max(0, Math.round(m + Math.sqrt(m * (1 - p)) * gaussian()))); }
+function gameMix(rtp, pvar, hp, M) {
+  // payout per spin: 0 (prob 1-hp), a (prob hp(1-q)), M (prob hp q); matches mean = rtp, variance = pvar, hit rate = hp
+  const m1 = rtp / hp, m2 = (pvar + rtp * rtp) / hp;
+  const f = q => Math.pow(m1 - q * M, 2) / (1 - q) + q * M * M - m2;
+  let lo = 0, hi = Math.min(m1 / M, 0.999999);
+  for (let i = 0; i < 90; i++) { const mid = (lo + hi) / 2; if (f(mid) > 0) hi = mid; else lo = mid; }
+  const q = (lo + hi) / 2; return { q, a: Math.min(M, Math.max(0, (m1 - q * M) / (1 - q))) };
+}
+function simulateMachine(a, runs) {
+  const g = MACH[a.m], mix = gameMix(g.rtp, g.pvar, g.hitp, g.maxm);
+  const n = a.sp, bet = a.cin / n, sumBet2 = a.var / g.pvar, k = Math.sqrt(sumBet2 / (n * bet * bet));
+  const keep = [], hits = [];
+  for (let r = 0; r < runs; r++) {
+    const hN = binom(n, g.hitp), big = binom(hN, mix.q);
+    const S = (hN - big) * mix.a + big * g.maxm;
+    const hw = a.theo + k * bet * (n * g.rtp - S);
+    keep.push(hw / a.cin); hits.push(hN / n);
+  }
+  return { keep, hits };
+}
+let simPick = "M-1158";
+function renderSim() {
+  const all = machineAgg(false).filter(a => a.sp > 0);
+  const sel = el("simMachine");
+  if (!sel.options.length || sel.dataset.period !== state.from + state.to) {
+    sel.textContent = "";
+    const b10 = all.filter(a => BOTTOM.includes(a.m)).sort((x, y) => x.hw - y.hw), rest = all.filter(a => !BOTTOM.includes(a.m)).sort((x, y) => x.m < y.m ? -1 : 1);
+    const g1 = h("optgroup", { label: "Management's 10" }), g2 = h("optgroup", { label: "All other machines" });
+    b10.forEach(a => g1.append(h("option", { value: a.m }, a.m + " · " + a.theme)));
+    rest.forEach(a => g2.append(h("option", { value: a.m }, a.m + " · " + a.theme)));
+    sel.append(g1, g2); sel.dataset.period = state.from + state.to;
+  }
+  if (![...sel.options].some(o => o.value === simPick)) simPick = sel.options[0] ? sel.options[0].value : null;
+  sel.value = simPick;
+  const a = all.find(x => x.m === simPick); if (!a) return;
+  const RUNS = 1000, sim = simulateMachine(a, RUNS), real = a.hw / a.cin;
+  const mean = sim.keep.reduce((s2, v) => s2 + v, 0) / RUNS;
+  const low = real <= mean;
+  const asBad = sim.keep.filter(v => low ? v <= real : v >= real).length;
+  const lo = Math.min(...sim.keep, real), hi = Math.max(...sim.keep, real), B = 34, w = (hi - lo) / B || 1e-6;
+  const counts = new Array(B).fill(0); sim.keep.forEach(v => counts[Math.min(B - 1, Math.floor((v - lo) / w))]++);
+  const labels = counts.map((_, i) => pct(lo + (i + 0.5) * w, 1));
+  const realBin = Math.min(B - 1, Math.floor((real - lo) / w));
+  const tail = i => low ? i <= realBin : i >= realBin;
+  mk("cSim", { type: "bar", data: { labels, datasets: [bar("Fair replays", counts, counts.map((_, i) => tail(i) ? T.s1 : T.ctx), { barPercentage: 1, categoryPercentage: 1, borderRadius: 2 })] },
+    options: baseOpts({ interaction: { mode: "index", intersect: false }, scales: { x: { title: { display: true, text: "Keep rate over the period (share of bets the casino kept)", color: T.muted } }, y: { title: { display: true, text: "Replays", color: T.muted } } },
+      plugins: { bands: { items: [{ from: labels[realBin], to: labels[realBin], line: true, label: "Real: " + pct(real, 1) }] }, tooltip: { callbacks: { title: i => "Keep rate ≈ " + i[0].label, label: c => " " + c.raw + " of " + RUNS + " replays" } } } }) });
+  const hMax = Math.max(...sim.hits), hMin = Math.min(...sim.hits);
+  const odds = asBad === 0 ? "0 times" : asBad + (asBad === 1 ? " time" : " times");
+  const verdictTxt = asBad <= 2 ? "That is far too rare to be bad luck. Something about this machine is different." : asBad < 50 ? "That is unusual but can happen by luck now and then. Worth watching, not replacing." : "That happens often by luck alone, so this machine's result is ordinary luck.";
+  el("simSimple").innerHTML = "";
+  el("simSimple").append(h("b", {}, "What it means: "), "in 1,000 fair replays, " + a.m + " did as " + (low ? "badly" : "well") + " as it really did " + odds + ". " + verdictTxt + " Like flipping a fair coin 1,000 times to see how often you get a result as extreme as the real one.");
+  const pSim = asBad === 0 ? "< 0.001" : (asBad / RUNS).toFixed(3), pNorm = low ? Phi(a.z) : 1 - Phi(a.z);
+  el("simAnalyst").innerHTML = "";
+  el("simAnalyst").append(h("b", {}, "Method: "), a.m + " (" + a.theme + "): real keep rate " + pct(real, 2) + " vs. simulated mean " + pct(mean, 2) + ". Simulated one-sided p = " + pSim + " (" + RUNS + " replays); normal-approximation p from z = " + a.z.toFixed(2) + " is " + (pNorm < 0.0001 ? pNorm.toExponential(1) : pNorm.toFixed(4)) + ". Simulated hit rate ranged " + pct(hMin, 2) + "–" + pct(hMax, 2) + " vs. real " + pct(a.hit, 2) + " (spec " + pct(a.hitp, 2) + "). 3-point payout model matched to RTP, variance and hit rate; bet-size spread corrected with Σbet².");
+}
+el("simMachine").addEventListener("change", e => { simPick = e.target.value; renderSim(); });
+el("simRun").addEventListener("click", () => renderSim());
+function luckWord(z) { return z <= -3 ? "Very unusual (low)" : z <= -2 ? "Unlucky" : z >= 3 ? "Very unusual (high)" : z >= 2 ? "Lucky" : "Normal"; }
+function renderMachineTable(all, nDays, ref) {
+  const q = state.search.trim().toLowerCase();
+  let list = all.map(a => Object.assign(a, { verdict: verdict(a, ref, nDays) })).filter(a => !q || (a.m + " " + a.theme + " " + zoneName[a.zone] + " " + a.mfr + " " + a.b + " " + a.verdict[0]).toLowerCase().includes(q));
+  const { key, dir } = state.sort;
+  const val = a => key === "verdict" ? a.verdict[0] : key === "zone" ? zoneName[a.zone] : a[key];
+  list.sort((a, b) => { const x = val(a), y = val(b); return (x < y ? -1 : x > y ? 1 : 0) * dir; });
+  const total = list.length; if (!state.showAll) list = list.slice(0, 30);
+  el("mMore").textContent = state.showAll ? "Show first 30" : "Show all " + total;
+  const chip = a => h("span", { class: "chip " + a.verdict[1] }, a.verdict[0]);
+  const C = state.view === "analyst" ? [
+    ["m", "Machine", 0, a => h("b", {}, a.m)], ["zone", "Zone", 0, a => zoneName[a.zone]], ["b", "Bank", 0, a => a.b], ["theme", "Game", 0, a => a.theme], ["mfr", "Brand", 0, a => a.mfr],
+    ["days", "Days", 1, a => a.days], ["cin", "Coin-in", 1, a => money(a.cin)], ["hw", "House win", 1, a => money(a.hw)], ["theo", "Theo", 1, a => money(a.theo)],
+    ["z", "Luck z", 1, a => a.z.toFixed(2)], ["hitZ", "Hit-rate z", 1, a => a.hitZ.toFixed(1)], ["hold", "Hold", 1, a => pct(a.hold, 2)], ["thold", "Theo hold", 1, a => pct(a.thold, 1)],
+    ["tpa", "Theo / avail. hr", 1, a => "$" + a.tpa.toFixed(2)], ["avail", "Availability", 1, a => pct(a.avail, 2)], ["verdict", "Verdict", 0, chip]
+  ] : [
+    ["m", "Machine", 0, a => h("b", {}, a.m)], ["zone", "Zone", 0, a => zoneName[a.zone]], ["theme", "Game", 0, a => a.theme], ["days", "Days on floor", 1, a => a.days],
+    ["tpa", "Earns per working hour", 1, a => "$" + a.tpa.toFixed(2)], ["z", "Luck", 0, a => luckWord(a.z)], ["verdict", "Verdict", 0, chip]
+  ];
+  const t = el("tMachines"); t.textContent = "";
+  t.append(h("thead", {}, h("tr", {}, ...C.map(([k, lab, n]) => h("th", { class: "sortable" + (n ? " num" : ""), onclick: () => { state.sort = { key: k, dir: state.sort.key === k ? -state.sort.dir : 1 }; renderMachineTable(all, nDays, ref); }, "aria-sort": key === k ? (dir > 0 ? "ascending" : "descending") : "none" }, lab + (key === k ? (dir > 0 ? " ↑" : " ↓") : ""))))));
+  const tb = h("tbody"); const isB = new Set(BOTTOM);
+  for (const a of list) tb.append(h("tr", { class: isB.has(a.m) ? "hl" : "" }, ...C.map(([, , n, f]) => h("td", n ? { class: "num" } : {}, f(a)))));
+  t.append(tb);
+}
+el("mSearch").addEventListener("input", e => { state.search = e.target.value; renderMachines(); });
+el("mMore").addEventListener("click", () => { state.showAll = !state.showAll; renderMachines(); });
+
+function renderFloor() {
+  const bstats = new Map();
+  for (const r of BD) { if (!inP(r.mo)) continue; let a = bstats.get(r.b); if (!a) { a = { theo: 0, av: 0, oc: 0 }; bstats.set(r.b, a); } a.theo += r.theo; a.av += r.av; a.oc += r.oc; }
+  const vals = BANKS.map(b => { const s = bstats.get(b.bank); return s && s.av ? s.theo / s.av : null; });
+  const sorted = vals.filter(v => v != null).sort((a, b) => a - b);
+  const qs = [0.2, 0.4, 0.6, 0.8].map(p => sorted[Math.floor(p * (sorted.length - 1))]);
+  const bin = v => v == null ? -1 : qs.filter(q => v > q).length;
+  const leg = el("mapLegend"); leg.textContent = "";
+  const edges = [sorted[0], ...qs, sorted[sorted.length - 1]];
+  for (let i = 0; i < 5; i++) leg.append(h("span", {}, h("i", { class: "box", style: "background:" + T.seq[i] }), "$" + edges[i].toFixed(0) + "–" + edges[i + 1].toFixed(0)));
+  leg.append(h("span", {}, "per working hour"));
+  const pts = BANKS.map((b, i) => ({ x: b.x, y: b.y, id: b.bank, zone: b.zone, v: vals[i], oc: bstats.get(b.bank) ? bstats.get(b.bank).oc / bstats.get(b.bank).av : null }));
+  const sel = p => (state.bank !== "all" ? p.id === state.bank : state.zone !== "all" && p.zone === state.zone);
+  const zc = Object.fromEntries(ZONES.map(z => [z.zone, z]));
+  const mapPlugin = {
+    id: "mapdecor",
+    beforeDatasetsDraw(chart) {
+      const { ctx, scales: { x, y } } = chart; ctx.save();
+      for (const w of WALK) { const a = zc[w.zone_a], b = zc[w.zone_b]; ctx.strokeStyle = w.s ? T.s1 : T.axis; ctx.lineWidth = w.s ? 2.5 : 6; ctx.globalAlpha = w.s ? 1 : 0.55; ctx.setLineDash(w.s ? [6, 4] : []); ctx.beginPath(); ctx.moveTo(x.getPixelForValue(a.x), y.getPixelForValue(a.y)); ctx.lineTo(x.getPixelForValue(b.x), y.getPixelForValue(b.y)); ctx.stroke(); }
+      ctx.restore();
+    },
+    afterDatasetsDraw(chart) {
+      const { ctx, scales: { x, y } } = chart; ctx.save(); ctx.font = "700 12px " + FONT; ctx.textAlign = "center";
+      const off = { "Z-HTL": -40, "Z-HL": -34, "Z-B40": 40, "Z-GAR": 42, "Z-BAR": 44, "Z-ENT": -32, "Z-PIT": -36 };
+      ctx.lineJoin = "round"; ctx.lineWidth = 4; ctx.strokeStyle = T.card;
+      for (const z of ZONES) { const px = x.getPixelForValue(z.x), py = y.getPixelForValue(z.y) + (off[z.zone] ?? -14); ctx.strokeText(z.name, px, py); ctx.fillStyle = T.ink; ctx.fillText(z.name, px, py); }
+      ctx.restore();
+    }
+  };
+  mk("cMap", { type: "scatter", plugins: [mapPlugin], data: { datasets: [{ label: "Banks", data: pts,
+      backgroundColor: pts.map(p => p.v == null ? T.grid : T.seq[bin(p.v)]), borderColor: pts.map(p => sel(p) ? T.ink : T.card), borderWidth: pts.map(p => sel(p) ? 3 : 1.5),
+      pointRadius: 9, pointHoverRadius: 11, pointHitRadius: 6 }] },
+    options: baseOpts({ interaction: { mode: "nearest", intersect: true }, layout: { padding: 18 },
+      scales: { x: { type: "linear", display: false, min: -5, max: 135 }, y: { display: false, reverse: true, min: -10, max: 115 } },
+      plugins: { tooltip: { callbacks: { title: i => "Bank " + i[0].raw.id + " · " + zoneName[i[0].raw.zone], label: c => [" " + (c.raw.v == null ? "no data" : "$" + c.raw.v.toFixed(2) + " expected per working hour"), " seats occupied " + pct(c.raw.oc, 0) + " of the time", " click to focus"] } } },
+      onClick: (_e, els, chart) => { if (!els.length) return; const p = chart.data.datasets[0].data[els[0].index]; if (state.bank === p.id) setPlace("all", "all"); else setPlace(p.zone, p.id); },
+      onHover: (e, els) => { e.native.target.style.cursor = els.length ? "pointer" : "default"; }
+    }) });
+
+  const themes = ["all", "Desert Gold", "Royal Draw", "Comet Cash", "Prairie Thunder"];
+  const tg = el("themeToggle"); tg.textContent = "";
+  themes.forEach(t => tg.append(h("button", { class: state.theme === t ? "on" : "", onclick: () => { state.theme = t; renderFloor(); } }, t === "all" ? "All games" : t)));
+  const zs = new Map();
+  for (const r of MM) { if (!inP(r.mo) || (state.theme !== "all" && MACH[r.m].theme !== state.theme)) continue; let a = zs.get(r.z); if (!a) { a = { theo: 0, av: 0 }; zs.set(r.z, a); } a.theo += r.theo; a.av += r.av; }
+  const zl = ZONES.map(z => ({ z: z.zone, name: z.name, v: zs.get(z.zone) && zs.get(z.zone).av ? zs.get(z.zone).theo / zs.get(z.zone).av : null })).filter(z => z.v != null).sort((a, b) => a.v - b.v);
+  const hiZone = state.zone !== "all" ? state.zone : "Z-B40";
+  mk("cZone", { type: "bar", data: { labels: zl.map(z => z.name), datasets: [bar("Expected earnings per working hour", zl.map(z => z.v), zl.map(z => z.z === hiZone ? T.s1 : T.ctx))] },
+    options: baseOpts({ indexAxis: "y", interaction: { mode: "nearest", intersect: true, axis: "y" }, scales: { x: { grid: { display: true, color: T.grid }, ticks: { callback: v => "$" + v } }, y: { grid: { display: false }, border: { color: T.axis }, ticks: { autoSkip: false } } },
+      plugins: { tooltip: { callbacks: { label: c => " $" + c.raw.toFixed(2) + " per working hour" } } },
+      onClick: (_e, els) => { if (!els.length) return; const z = zl[els[0].index].z; setPlace(state.zone === z ? "all" : z, "all"); } }) });
+
+  const byDate = groupBy(ZD, r => r.d); const dates = [...byDate.keys()].sort();
+  const b40 = [], rest = [];
+  for (const d of dates) { const rs = byDate.get(d); const a = rs.filter(r => r.z === "Z-B40"), o = rs.filter(r => r.z !== "Z-B40"); b40.push(sum(a, r => r.cov) ? sum(a, r => r.ent) / sum(a, r => r.cov) : null); rest.push(sum(o, r => r.cov) ? sum(o, r => r.ent) / sum(o, r => r.cov) : null); }
+  const baseIdx = dates.map((d, i) => d < "2025-03-03" ? i : -1).filter(i => i >= 0);
+  const avg = arr => sum(baseIdx, i => arr[i]) / baseIdx.length;
+  const bB = avg(b40), bR = avg(rest);
+  const rb = rolling(b40.map(v => v == null ? null : v / bB * 100), 7), rr = rolling(rest.map(v => v == null ? null : v / bR * 100), 7);
+  const keep = dates.map((d, i) => inP(d.slice(0, 7)) ? i : -1).filter(i => i >= 0);
+  mk("cTraffic", { type: "line", data: { labels: keep.map(i => dates[i]), datasets: [line("Back Forty", keep.map(i => rb[i]), T.s1), line("All other zones", keep.map(i => rr[i]), T.ctx)] },
+    options: baseOpts({ scales: { x: dateTicks, y: { suggestedMin: 60, suggestedMax: 115 } },
+      plugins: { hlines: { items: [{ y: 100, color: T.axis }] }, bands: { items: closure ? [{ from: closure.s, to: closure.e, label: "Walkway closed" }] : [] }, tooltip: { callbacks: { title: i => dayLabel(i[0].label), label: c => " " + (c.raw == null ? "–" : c.raw.toFixed(0)) + "  " + c.dataset.label } } } }) });
+
+  const d = dailyPlace(); const thHold = sum(d, x => x.theo) / sum(d, x => x.cin);
+  const evDays = new Set(); EVENTS.forEach(e => { for (const x of d) if (x.d >= e.s && x.d <= e.e) evDays.add(x.d); });
+  const wdBase = {}, wdAll = {};
+  for (const x of d) { const wd = dayInfo[x.d].wd; (wdAll[wd] = wdAll[wd] || []).push(x.cin); if (!evDays.has(x.d)) (wdBase[wd] = wdBase[wd] || []).push(x.cin); }
+  const mean = a => a && a.length ? a.reduce((s, v) => s + v, 0) / a.length : null;
+  const t = el("tEvents"); t.textContent = "";
+  t.append(h("thead", {}, h("tr", {}, h("th", {}, "Event"), h("th", {}, "Dates"), h("th", { class: "num" }, "vs. a normal day"), h("th", { class: "num" }, "Extra bet"), h("th", { class: "num" }, "Extra earnings"))));
+  const tb = h("tbody"); let any = false;
+  for (const e of EVENTS) {
+    const ds = d.filter(x => x.d >= e.s && x.d <= e.e); if (!ds.length) continue; any = true;
+    const up = sum(ds, x => x.cin - (mean(wdBase[dayInfo[x.d].wd]) || x.cin)); const pc = mean(ds.map(x => x.cin / (mean(wdBase[dayInfo[x.d].wd]) || x.cin) - 1));
+    tb.append(h("tr", { class: e.scope === "property" ? "hl" : "" }, h("td", { class: "wrap" }, e.name + (e.scope === "property" ? " (our promotion)" : "")), h("td", {}, dayLabel(e.s) + "–" + dayLabel(e.e)), h("td", { class: "num" }, signed(pc, v => pct(v, 0))), h("td", { class: "num" }, signed(up, money)), h("td", { class: "num" }, signed(up * thHold, money))));
+  }
+  if (!any) tb.append(h("tr", {}, h("td", { colspan: 5, class: "muted" }, "No events in the selected period.")));
+  t.append(tb);
+  const order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].filter(w => wdAll[w]);
+  mk("cWeekday", { type: "bar", data: { labels: order, datasets: [bar("Average amount bet per day", order.map(w => mean(wdAll[w])), order.map(w => (w === "Sat" || w === "Fri" || w === "Sun") ? T.s1 : T.ctx))] },
+    options: baseOpts({ scales: { y: yMoney }, plugins: { tooltip: { callbacks: { label: c => " " + money(c.raw) + " bet on an average " + c.label } } } }) });
+
+  const mon = groupBy(d, x => x.d.slice(0, 7)); const ml = [...mon.keys()].sort();
+  const cinM = ml.map(m => sum(mon.get(m), x => x.cin) / mon.get(m).length);
+  const dim = { "01": 31, "02": 28, "03": 31, "04": 30, "05": 31, "06": 30 };
+  const vis = ml.map(m => { const c = CITY.find(r => r.mo === m); return c ? c.visitors / dim[m.slice(5)] : null; });
+  mk("cCity", { type: "line", data: { labels: ml.map(monLabel), datasets: [line("Gilded Ace amount bet per day", cinM.map(v => v / cinM[0] * 100), T.s1, { pointRadius: 3 }), line("Las Vegas visitors per day", vis.map(v => v / vis[0] * 100), T.s2, { pointRadius: 3 })] },
+    options: baseOpts({ scales: { y: { suggestedMin: 85, suggestedMax: 110 } }, plugins: { hlines: { items: [{ y: 100, color: T.axis }] }, tooltip: { callbacks: { label: c => " " + c.raw.toFixed(1) + "  " + c.dataset.label } } } }) });
+}
+
+function renderDowntime() {
+  const d = dailyPlace(); const dh = sum(d, x => x.dh), lt = sum(d, x => x.lt), th = sum(d, x => x.theo);
+  const F = FAULTS.filter(r => inP(r.mo) && (r.b == null ? state.zone === "all" && state.bank === "all" : placeOk(r.b)));
+  const n = sum(F, r => r.n), wait = sum(F, r => r.wait), fix = sum(F, r => r.fix);
+  const box = el("dtKpis"); box.textContent = "";
+  box.append(stat("Machine-hours out of service", num(dh), "of " + num(sum(d, x => x.sc)) + " scheduled"), stat("Earnings lost", money(lt), pct(lt / th, 2) + " of expected earnings", true), stat("Repairs", num(n), "about " + (fix / n || 0).toFixed(1) + " hours each to fix"), stat("Wait for a technician", (wait / n || 0).toFixed(1) + " h", "average, from breakdown to work starting"));
+  const cols = [T.s1, T.s2, T.s3];
+  const ml = MONTHS.filter(inP);
+  const lostBy = {}; for (const r of MM) { if (!inP(r.mo) || !placeOk(r.b)) continue; lostBy[r.mfr + r.mo] = (lostBy[r.mfr + r.mo] || 0) + r.lt; }
+  mk("cLost", { type: "bar", data: { labels: ml.map(monLabel), datasets: MFRS.map((m, i) => bar(m, ml.map(mo => lostBy[m + mo] || 0), cols[i], { borderColor: T.card, borderWidth: { top: 2 }, borderRadius: 0, borderSkipped: false })) },
+    options: baseOpts({ scales: { x: { stacked: true }, y: Object.assign({ stacked: true }, yMoney) }, plugins: { tooltip: { callbacks: { label: c => " " + money(c.raw) + "  " + c.dataset.label, footer: items => "Total " + money(items.reduce((s, i) => s + i.raw, 0)) } } } }) });
+  const md = {}; for (const r of MM) { if (!inP(r.mo) || !placeOk(r.b)) continue; md[r.mfr] = (md[r.mfr] || 0) + r.days; }
+  const fm = {}; for (const r of F) fm[r.mfr] = (fm[r.mfr] || 0) + r.n;
+  const rate = MFRS.map(m => md[m] ? (fm[m] || 0) / md[m] * 100 : null);
+  mk("cFaultRate", { type: "bar", data: { labels: MFRS, datasets: [bar("Repairs per 100 machine-days", rate, cols)] },
+    options: baseOpts({ indexAxis: "y", interaction: { mode: "nearest", intersect: true, axis: "y" }, scales: { x: { grid: { display: true, color: T.grid } }, y: { grid: { display: false }, border: { color: T.axis } } }, plugins: { tooltip: { callbacks: { label: c => " " + (c.raw ?? 0).toFixed(2) + " repairs per 100 days (" + num(fm[c.label] || 0) + " repairs)" } } } }) });
+  const byT = groupBy(F, r => r.techs); const tl = [...byT.keys()].sort();
+  mk("cWait", { type: "bar", data: { labels: tl.map(t => t === 0 ? "Nobody on shift" : t === 1 ? "1 technician" : t + " technicians"), datasets: [bar("Average wait (hours)", tl.map(t => sum(byT.get(t), r => r.wait) / sum(byT.get(t), r => r.n)), tl.map(t => t === 0 ? T.s1 : T.ctx))] },
+    options: baseOpts({ interaction: { mode: "nearest", intersect: true }, scales: { y: { ticks: { callback: v => v + " h" } } }, plugins: { tooltip: { callbacks: { label: c => " " + c.raw.toFixed(1) + " hours on average (" + num(sum(byT.get(tl[c.dataIndex]), r => r.n)) + " repairs)" } } } }) });
+  const t = el("tTech"); t.textContent = "";
+  t.append(h("thead", {}, h("tr", {}, h("th", {}, "Month"), ...["day", "swing", "grave"].map(s => h("th", { class: "num" }, ({ day: "Day", swing: "Evening", grave: "Overnight" })[s] + " (worked / planned)")), h("th", { class: "num" }, "Days with no day tech"))));
+  const tb = h("tbody");
+  for (const mo of ml) { const rs = TECH.filter(r => r.mo === mo); const cell = s => { const r = rs.find(x => x.shift === s); return r ? r.act.toFixed(1) + " / " + r.pl.toFixed(1) : "–"; }; const z = sum(rs, r => r.zero_days); tb.append(h("tr", { class: z > 0 ? "hl" : "" }, h("td", {}, monLabel(mo)), h("td", { class: "num" }, cell("day")), h("td", { class: "num" }, cell("swing")), h("td", { class: "num" }, cell("grave")), h("td", { class: "num" }, z))); }
+  t.append(tb);
+}
+
+function groupRows() { const [dim, v] = state.group.split("|"); return PG.filter(r => inP(r.mo) && (dim === "all" || r[dim] === v)); }
+function renderPlayers() {
+  const [dim, v] = state.group.split("|");
+  el("grpBadge").textContent = dim === "all" ? "All carded guests" : ({ region: "Region", tier: "Tier", age: "Age" })[dim] + ": " + v;
+  const P = groupRows();
+  const c = D.conc[state.from + "|" + state.to + "|" + dim + "|" + v];
+  const cin = sum(P, r => r.cin), pay = sum(P, r => r.payout), net = sum(P, r => r.net), th = sum(P, r => r.theo);
+  const box = el("plKpis"); box.textContent = "";
+  box.append(stat("Guests bet", money(cin), c ? num(c.n) + " guests with carded play" : ""), stat("Machines paid back", money(pay), pct(pay / cin, 1) + " of what was bet"), stat("Guests' net result", money(net), "Game design predicted " + money(-th) + ". Luck: " + signed(net + th, money), true), stat("Guests who went home ahead", c ? pct(c.ahead, 0) : "–", c ? "about 1 in " + Math.round(1 / c.ahead) : ""));
+  if (c) {
+    const labels = ["Top 1% (biggest losers)", "Next 9%", "Middle 40%", "Bottom half"];
+    const lost = c.parts.map(p => -p);
+    mk("cConc", { type: "bar", data: { labels, datasets: [bar("Total lost", lost, lost.map(x => x >= 0 ? T.s1 : T.s2))] },
+      options: baseOpts({ indexAxis: "y", interaction: { mode: "nearest", intersect: true, axis: "y" }, scales: { x: Object.assign({ grid: { display: true, color: T.grid } }, yMoney), y: { grid: { display: false }, border: { color: T.axis } } },
+        plugins: { tooltip: { callbacks: { label: x => x.raw >= 0 ? " lost " + money(x.raw) + " in total, " + pct(x.raw / c.losses, 0) + " of all losses" : " won " + money(-x.raw) + " overall (this group came out ahead)" } } } }) });
+  }
+  const g = groupBy(P, r => r[state.dim]); const keys = [...g.keys()].sort();
+  const t = el("tGroups"); t.textContent = "";
+  const totNet = sum(P, r => r.net);
+  t.append(h("thead", {}, h("tr", {}, h("th", {}, ({ region: "Home region", tier: "Tier", age: "Age" })[state.dim]), h("th", { class: "num" }, "Guest-months"), h("th", { class: "num" }, "Bet"), h("th", { class: "num" }, "Net result"), h("th", { class: "num" }, "Share of losses"), h("th", { class: "num" }, "Luck"), h("th", { class: "num" }, "Comps as % of expected"))));
+  const tb = h("tbody");
+  for (const k of keys) { const rs = g.get(k); const n = sum(rs, r => r.net), th2 = sum(rs, r => r.theo); tb.append(h("tr", { class: k === "Local" ? "hl" : "" }, h("td", {}, k), h("td", { class: "num" }, num(sum(rs, r => r.pm))), h("td", { class: "num" }, money(sum(rs, r => r.cin))), h("td", { class: "num" }, money(n)), h("td", { class: "num" }, pct(n / totNet, 0)), h("td", { class: "num" }, signed(n + th2, money)), h("td", { class: "num" }, pct(sum(rs, r => r.comp) / th2, 2)))); }
+  t.append(tb);
+}
+el("dimToggle").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; state.dim = b.dataset.dim; [...el("dimToggle").children].forEach(x => x.classList.toggle("on", x === b)); renderPlayers(); });
+
+function renderComps() {
+  const C = D.comp, bal = C.earned - C.redeemed;
+  const P = groupRows();
+  const box = el("cpKpis"); box.textContent = "";
+  box.append(
+    stat("What comps cost the casino", money(sum(P, r => r.comp)), pct(sum(P, r => r.comp) / sum(P, r => r.theo), 2) + " of expected earnings. Menu value " + money(sum(P, r => r.face))),
+    stat("Cost of each point redeemed", (C.cost_per_pt_after / C.cost_per_pt_before).toFixed(1) + "×", "Up from " + (C.cost_per_pt_before * 100).toFixed(1) + "¢ to " + (C.cost_per_pt_after * 100).toFixed(1) + "¢ on May 1", true),
+    stat("Points guests haven't used", num(bal / 1e6, 0) + "M", "only " + pct(C.redeemed / C.earned, 0) + " of points earned were redeemed"),
+    stat("Cost if all were redeemed", money(bal * C.cost_per_pt_after), "was " + money(bal * C.cost_per_pt_before) + " at the old rate (points reset each year)")
+  );
+  const weeks = [...new Set(RW.map(r => r.wk))].sort();
+  const tiers = [["Base", T.s1], ["Gold", T.s3], ["Platinum", T.s2]];
+  mk("cRedeem", { type: "line", data: { labels: weeks, datasets: tiers.map(([t, col]) => line(t + " tier", weeks.map(w => { const r = RW.find(x => x.wk === w && x.tier === t); return r ? r.pts_per_usd : null; }), col, { tension: 0 })) },
+    options: baseOpts({ scales: { x: dateTicks, y: { min: 0 } }, plugins: { bands: { items: [{ from: "2025-04-28", to: "2025-04-28", line: true, label: "May 1: points cut" }] }, tooltip: { callbacks: { title: i => "Week of " + dayLabel(i[0].label), label: c => " " + (c.raw == null ? "–" : c.raw.toFixed(1)) + " points per $1  " + c.dataset.label } } } }) });
+  const ml = MONTHS.filter(inP); const bym = groupBy(P, r => r.mo);
+  mk("cCompCost", { type: "bar", data: { labels: ml.map(monLabel), datasets: [bar("Comp cost", ml.map(m => sum(bym.get(m) || [], r => r.comp)), ml.map(m => m >= "2025-05" ? T.s1 : T.ctx))] },
+    options: baseOpts({ scales: { y: yMoney }, plugins: { tooltip: { callbacks: { label: c => { const rs = bym.get(ml[c.dataIndex]) || []; return [" " + money(c.raw) + " real cost", " " + pct(c.raw / sum(rs, r => r.theo), 2) + " of expected earnings", " " + num(sum(rs, r => r.cr)) + " comps redeemed"]; } } } } }) });
+}
+
+function renderForecast() {
+  const F = rows(D.forecast.rows);
+  const test = F.filter(r => r.split === "test");
+  mk("cForecast", { type: "line", data: { labels: F.map(r => r.d), datasets: [
+      line("Actual", F.map(r => r.cin), T.s1, { borderWidth: 2, tension: 0 }),
+      line("Weekday + events", F.map(r => r.split === "test" ? r.p_dowev : null), T.s2, { tension: 0, spanGaps: false }),
+      line("Weekday only", F.map(r => r.split === "test" ? r.p_dow : null), T.s3, { tension: 0, spanGaps: false, borderDash: [5, 3] }),
+      line("Flat average", F.map(r => r.split === "test" ? r.p_const : null), T.muted, { tension: 0, spanGaps: false, borderDash: [2, 3] })
+    ] },
+    options: baseOpts({ scales: { y: yMoney, x: dateTicks },
+      plugins: { bands: { items: [{ from: "2025-01-01", to: "2025-04-30", color: T.grid, label: "Learning period (Jan–Apr)" }, { from: "2025-05-01", to: "2025-05-01", line: true, label: "Test →" }] },
+        tooltip: { callbacks: { title: i => dayLabel(i[0].label) + " (" + dayInfo[i[0].label].wd + ")" + (dayInfo[i[0].label].ev ? " · " + dayInfo[i[0].label].ev : ""), label: c => c.raw == null ? null : " " + money(c.raw) + "  " + c.dataset.label } } } }) });
+  const M = D.forecast.mae, B = D.forecast.bias;
+  const t = el("tMae"); t.textContent = "";
+  t.append(h("thead", {}, h("tr", {}, h("th", {}, "Forecast"), h("th", { class: "num" }, "Average daily miss"), h("th", { class: "num" }, "Better than baseline by"), h("th", { class: "num" }, "Leans"))));
+  const tb = h("tbody");
+  [["p_const", "Flat average of Jan–Apr (baseline)"], ["p_dow", "Average for that weekday"], ["p_dowev", "Weekday + announced events (ours)"], ["p_reg", "Regression: weekday + events + trend"]].forEach(([k, lab]) => tb.append(h("tr", { class: k === D.forecast.chosen ? "hl" : "" }, h("td", { class: "wrap" }, lab), h("td", { class: "num" }, money(M[k])), h("td", { class: "num" }, k === "p_const" ? "–" : pct(1 - M[k] / M.p_const, 0)), h("td", { class: "num" }, (B[k] > 0 ? "high " : "low ") + money(Math.abs(B[k]))))));
+  t.append(tb);
+  const wdOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const byWd = groupBy(test, r => dayInfo[r.d].wd);
+  const mae = (rs, k) => rs.reduce((s2, r) => s2 + Math.abs(r.cin - r[k]), 0) / rs.length;
+  const tw = el("tFcWd"); tw.textContent = "";
+  tw.append(h("thead", {}, h("tr", {}, h("th", {}, "Weekday"), h("th", { class: "num" }, "Days"), h("th", { class: "num" }, "MAE flat"), h("th", { class: "num" }, "MAE weekday"), h("th", { class: "num" }, "MAE weekday + events"), h("th", { class: "num" }, "Bias (weekday + events)"))));
+  const twb = h("tbody");
+  wdOrder.filter(w => byWd.has(w)).forEach(w => { const rs = byWd.get(w); twb.append(h("tr", {}, h("td", {}, w), h("td", { class: "num" }, rs.length), h("td", { class: "num" }, money(mae(rs, "p_const"))), h("td", { class: "num" }, money(mae(rs, "p_dow"))), h("td", { class: "num" }, money(mae(rs, "p_dowev"))), h("td", { class: "num" }, signed(rs.reduce((s2, r) => s2 + r.p_dowev - r.cin, 0) / rs.length, money)))); });
+  tw.append(twb);
+  const BT = D.forecast.backtest, CH = D.forecast.chosen;
+  const mods = [["p_const", "Flat average", T.ctx], ["p_dow", "Weekday only", T.s3], ["p_dowev", "Weekday + events", T.s2], ["p_reg", "Regression", T.s1]];
+  mk("cBacktest", { type: "bar", data: { labels: BT.map(b => monLabel(b.test_month)), datasets: mods.map(([k, lab, col]) => bar(lab, BT.map(b => b[k]), col, { maxBarThickness: 26 })) },
+    options: baseOpts({ scales: { y: yMoney }, plugins: { bands: { items: [{ from: monLabel("2025-05"), to: monLabel("2025-05"), line: true, label: "Model frozen →" }] }, tooltip: { callbacks: { label: c => " " + money(c.raw) + " average daily miss  " + c.dataset.label } } } }) });
+  const wins = BT.filter(b => b[CH] < b.p_const).length;
+  const avgC = BT.reduce((a, b) => a + b[CH], 0) / BT.length, avgB = BT.reduce((a, b) => a + b.p_const, 0) / BT.length, avgR = BT.reduce((a, b) => a + b.p_reg, 0) / BT.length;
+  el("btSimple").innerHTML = "";
+  el("btSimple").append(h("b", {}, "What it means: "), "our forecast beat the flat-average guess in " + wins + " of " + BT.length + " months, missing by about " + money(avgC) + " a day instead of " + money(avgB) + ". A fancier regression did not do better (" + money(avgR) + "), so we kept the simple model. Like checking a weather app on four different months, not just one.");
+  const tbt = el("tBacktest"); tbt.textContent = "";
+  tbt.append(h("thead", {}, h("tr", {}, h("th", {}, "Test month"), h("th", {}, "Trained through"), ...mods.map(([, lab]) => h("th", { class: "num" }, "MAE " + lab)), h("th", {}, "Best"))));
+  const tbb = h("tbody");
+  BT.forEach(b => { const best = mods.reduce((m, x) => b[x[0]] < b[m[0]] ? x : m, mods[0]); tbb.append(h("tr", { class: b.test_month >= "2025-05" ? "" : "hl" }, h("td", {}, monLabel(b.test_month)), h("td", {}, dayLabel(b.train_end)), ...mods.map(([k]) => h("td", { class: "num" }, money(b[k]))), h("td", {}, best[1]))); });
+  tbt.append(tbb);
+  const sel = D.forecast.selection;
+  el("btAnalyst").textContent = "Highlighted rows (Mar, Apr) were used to choose the model: mean MAE " + mods.map(([k, lab]) => lab + " " + money(sel[k])).join(", ") + ". Chosen: " + mods.find(m => m[0] === CH)[1] + ". May and Jun are out-of-sample confirmation. Regression coefficients (May–Jun fit): event +" + money(D.forecast.reg_coef.event) + "/day, trend " + money(D.forecast.reg_coef.trend_per_day) + "/day; the trend term extrapolates poorly, which explains its weaker holdout score.";
+  el("maeNote").textContent = "A normal test day saw about " + money(sum(test, r => r.cin) / test.length) + " bet. All forecasts lean slightly high because May–June ran a little below January–April, as it did across Las Vegas. Event days get a ×" + D.forecast.ev_mult.toFixed(2) + " boost, learned from January–April events only. The model was chosen on the March and April back-tests, before looking at May–June.";
+}
+
+function renderPlan() {
+  const E = EVID, C = D.comp;
+  const A = Object.fromEntries(rows(D.actions).map(a => [a.id, a]));
+  const cost = (id, q) => q * (A[id].unit_cost + A[id].per_day * Math.max(0, 30 - A[id].lead_days));
+  const m = E.m1158, shortDay = m.short / m.days;
+  const b = E.b40, lift = (b.pre / b.rest_pre) / (b.post / b.rest_post) - 1, liftDay = b.post_theo_per_day * lift, signDays = 30 - A["A-WAYFINDING"].lead_days;
+  const plan = [
+    { id: "A-INSPECT", q: 5, color: T.s1, cause: "Fixes: a possible leak", title: "Inspect M-1158 and 4 other unlucky machines", target: "M-1158, M-1054, M-1210, M-1010, M-1181",
+      plain: "Like getting a second opinion on a test result that looks wrong. Cheap to check, expensive to ignore.",
+      effect: "M-1158 runs about " + money(shortDay) + " a day below expected. If a settings fault is found and fixed on day 2, that's up to " + money(shortDay * (30 - A["A-INSPECT"].lead_days)) + " in July, or about " + money(shortDay * 365) + " a year. We expect the other four to come back clean, which confirms our luck test works.",
+      risk: "The win-frequency gap is far too big for chance, but the inspection could find a legitimate setting. Each check takes 2 hours, scheduled at quiet times.",
+      measure: "M-1158's win frequency back to 31.5% and its keep rate moving toward 10% over 30 days (luck score between −2 and +2).", link: "#machines" },
+    { id: "A-WAYFINDING", q: 1, color: T.s2, cause: "Fixes: location", title: "New signs pointing to Back Forty", target: "Back Forty zone (48 machines)",
+      plain: "Like putting a sign on Main Street that says \"more shops this way\" after the side street lost passers-by.",
+      effect: "Before the closure Back Forty earned " + pct(b.pre / b.rest_pre, 0) + " of the rest of the floor's rate; afterwards " + pct(b.post / b.rest_post, 0) + ". Closing that gap is worth about " + money(liftDay) + " a day, or ~" + money(liftDay * signDays) + " over the " + signDays + " days after the signs go up.",
+      risk: "High. Signs may not change habits, and part of the drop may be seasonal. To pay back, the signs need to deliver about " + pct(A["A-WAYFINDING"].unit_cost / (liftDay * signDays), 0) + " of our estimate.",
+      measure: "Compare Back Forty's foot traffic and earnings per working hour with the other zones, 20 days before vs. 20 days after.", link: "#floor" },
+    { id: "A-COMP-PILOT", q: 1, color: T.s3, cause: "Fixes: comps", title: "Test the comp change on half the guests", target: "Random half of carded guests go back to the old points rate",
+      plain: "Like a drug trial: give the new rule to one group and the old rule to another, then compare.",
+      effect: "Tells us whether the May 1 points cut brought people back more often. The cut more than doubled the cost of each point and raised the cost of honouring guests' " + num((C.earned - C.redeemed) / 1e6, 0) + "M unused points from " + money((C.earned - C.redeemed) * C.cost_per_pt_before) + " to " + money((C.earned - C.redeemed) * C.cost_per_pt_after) + ". Visits haven't risen so far.",
+      risk: "This buys information, not revenue. 25 days may be too short to see a change in visits. No extra comp cost (the test group gets the cheaper old rate).",
+      measure: "Visits per guest, expected earnings per guest, and comp cost, test group vs. control. If visits don't differ, roll the cut back for everyone.", link: "#comps" }
+  ];
+  plan.forEach(p => p.cost = cost(p.id, p.q));
+  const spent = sum(plan, p => p.cost), keep = 100000 - spent;
+  const bb = el("budgetBar"); bb.textContent = "";
+  plan.forEach(p => bb.append(h("div", { style: "flex:" + p.cost + ";background:" + p.color, title: p.title + " " + money(p.cost) }, money(p.cost))));
+  bb.append(h("div", { class: "keep", style: "flex:" + keep }, "Keep " + money(keep)));
+  const lg = el("budgetLegend"); lg.textContent = "";
+  ["Inspections", "Back Forty signs", "Comp test"].forEach((n, i) => lg.append(h("span", {}, h("i", { class: "box", style: "background:" + plan[i].color }), n + " " + money(plan[i].cost))));
+  lg.append(h("span", {}, h("i", { class: "box", style: "background:var(--track)" }), "Kept, because bad luck needs no fix"));
+  const box = el("actionCards"); box.textContent = "";
+  for (const p of plan) {
+    const a = A[p.id];
+    box.append(h("div", { class: "card action", style: "--ac:" + p.color },
+      h("div", { class: "cause" }, p.cause), h("h3", {}, p.title),
+      h("div", { class: "cost" }, money(p.cost)),
+      h("div", { class: "sub" }, p.q + " × " + money(a.unit_cost) + ", starts after " + a.lead_days + (a.lead_days === 1 ? " day" : " days") + " · " + p.target),
+      h("div", { class: "plain" }, p.plain),
+      h("dl", {}, h("dt", {}, "What we expect"), h("dd", {}, p.effect), h("dt", {}, "How sure we are"), h("dd", {}, p.risk), h("dt", {}, "How we'll know it worked"), h("dd", {}, p.measure)),
+      h("div", { class: "foot" }, h("a", { href: p.link }, "See the evidence"))));
+  }
+  const lease = cost("A-REPLACE-LEASE", 10), buy = cost("A-REPLACE-BUY", 10);
+  const g = E.wait_by_shift_techs.find(x => x.shift === "grave" && x.techs === 1), s2 = E.wait_by_shift_techs.find(x => x.shift === "swing" && x.techs === 2);
+  const techGain = E.faults_per_month_by_shift.grave * Math.max(0, g.wait - s2.wait) * E.shift_value.grave;
+  const rl = E.lost_by_mfr_month.Ridgeline, pmDays = 30 - A["A-PREVENTIVE"].lead_days, need = A["A-PREVENTIVE"].unit_cost / (rl * pmDays / 30);
+  const rej = [
+    ["Buy 10 new machines for the bottom 10", money(buy), "Over budget, and 7 of them would still sit in the quiet corner. Most of the 10 aren't faulty."],
+    ["Lease 10 new machines instead", money(lease), "They'd only run 16 days in July, in the same quiet spots. Nothing shows the machines themselves are the problem."],
+    ["Add an overnight technician", money(cost("A-TECH-SHIFT", 1)), "Shorter overnight waits would save about " + money(techGain) + " a month. It doesn't pay for itself."],
+    ["Preventive maintenance on Ridgeline machines", money(cost("A-PREVENTIVE", 1)), "Ridgeline breakdowns cost about " + money(rl) + " a month. " + (need > 1 ? "Even preventing every breakdown wouldn't repay it within July." : "It needs to cut breakdowns by ~" + pct(need, 0) + " to pay back.") + " Worth revisiting over a longer period."],
+    ["A promotion weekend", money(cost("A-PROMO", 1)), "Our February tournament added about $80k in expected earnings, but that's one event, prize costs are unknown, and it couldn't start before July 15. Our runner-up idea."],
+    ["Move machines or whole banks", money(cost("A-MOVE-BANK", 1)) + " per bank", "Every slot is full, so a move is a swap. Moving a strong machine into Back Forty loses what the weak one gains."],
+    ["Change the comp rate for everyone", money(cost("A-COMP-CHANGE", 1)), "With no comparison group we couldn't tell whether it worked. The test answers the same question properly."]
+  ];
+  const t = el("tRejected"); t.textContent = "";
+  t.append(h("thead", {}, h("tr", {}, h("th", {}, "Option"), h("th", { class: "num" }, "Cost for July"), h("th", {}, "Why not now"))));
+  const tb = h("tbody"); rej.forEach(r => tb.append(h("tr", {}, h("td", { class: "wrap" }, r[0]), h("td", { class: "num" }, r[1]), h("td", { style: "white-space:normal;min-width:280px" }, r[2])))); t.append(tb);
+}
+
+function render() {
+  readTheme();
+  renderBuckets(); renderOverview(); renderMachines(); renderFloor(); renderDowntime(); renderPlayers(); renderComps(); renderForecast(); renderPlan();
+}
+const themes = ["light", "dark", "auto"]; let ti = 0;
+try { const s = localStorage.getItem("ga-theme"); if (s && themes.includes(s)) ti = themes.indexOf(s); } catch (e) {}
+function applyTheme() { const t = themes[ti]; if (t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t); el("themeBtn").textContent = ({ light: "☀ Light", dark: "☾ Dark", auto: "◐ Auto" })[t]; }
+el("themeBtn").onclick = () => { ti = (ti + 1) % 3; try { localStorage.setItem("ga-theme", themes[ti]); } catch (e) {} applyTheme(); render(); };
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (themes[ti] === "auto") render(); });
+const TABS = ["overview", "machines", "floor", "downtime", "players", "comps", "forecast", "plan", "method"];
+function showTab() {
+  let id = location.hash.slice(1); if (!TABS.includes(id)) id = "overview";
+  document.querySelectorAll("main > section").forEach(sec => sec.classList.toggle("on", sec.id === "p-" + id));
+  document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + id));
+  window.scrollTo(0, 0); setTimeout(() => window.scrollTo(0, 0), 0);
+  requestAnimationFrame(() => Object.values(charts).forEach(c => c.resize()));
+}
+window.addEventListener("hashchange", showTab);
+let savedView = null; try { savedView = localStorage.getItem("ga-view"); } catch (e) {}
+state.view = savedView === "analyst" ? "analyst" : "simple";
+function applyView() {
+  document.body.classList.toggle("view-analyst", state.view === "analyst");
+  document.body.classList.toggle("view-simple", state.view !== "analyst");
+  document.querySelectorAll(".viewtog button").forEach(b => b.classList.toggle("on", b.dataset.view === state.view));
+  const md = el("methodDetails"); if (md) md.open = state.view === "analyst";
+}
+function setView(v) { state.view = v === "analyst" ? "analyst" : "simple"; try { localStorage.setItem("ga-view", state.view); } catch (e) {} applyView(); render(); }
+document.querySelectorAll(".viewtog button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+document.querySelectorAll(".analogy").forEach(a => a.addEventListener("click", () => { if (state.view === "analyst") a.classList.toggle("open"); }));
+const qs = new URLSearchParams(location.search);
+window.GA = {
+  D, rows, money, pct, num, sum, machineAgg, verdict, floorTpa, periodDays, bottomCounts, BANKS, ZONES, WALK, ZD, BD, MONTHS, BOTTOM, zoneName, bankZone,
+  setView, goTab: id => { if (location.hash === "#" + id) showTab(); else location.hash = id; },
+  // The story is always the first page. Only direct links to a specific page (e.g. #plan) go straight to the dashboard.
+  shouldShowStory: () => qs.has("story") || qs.has("scene") || !TABS.slice(1).includes(location.hash.slice(1)),
+  startScene: () => Math.max(1, parseInt(qs.get("scene") || "1", 10) || 1)
+};
+el("storyBtn").addEventListener("click", () => { if (window.GAStory) window.GAStory.open(1); });
+applyView();
+applyTheme();
+initFilters();
+showTab();
+render();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+<script src="story.js"></script>
+</body>
+</html>

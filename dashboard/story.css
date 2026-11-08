@@ -1,0 +1,113 @@
+/* Story intro overlay for the Gilded Ace dashboard. Pure CSS animation; respects reduced motion. */
+.story { position: fixed; inset: 0; z-index: 100; overflow: hidden; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); color: #fff;
+  background: radial-gradient(1200px 700px at 18% 8%, #6b0f1a 0%, #2a0508 58%, #170304 100%);
+  font-family: "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+.story[hidden] { display: none; }
+.st-top { display: flex; align-items: center; gap: 16px; padding: 14px 22px; }
+.st-brand { font-family: "Oswald", sans-serif; font-size: 16px; letter-spacing: .05em; opacity: .9; margin-right: auto; }
+.st-dots { display: flex; gap: 6px; }
+.st-dots i { width: 22px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.22); }
+.st-dots i.on { background: #fff; }
+.st-dots i.done { background: rgba(255,255,255,.6); }
+.st-skip { background: transparent; border: 1px solid rgba(255,255,255,.45); color: #fff; border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer; }
+.st-skip:hover { background: rgba(255,255,255,.1); }
+
+.st-stage { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 36px; align-items: center; max-width: 1200px; width: 100%; margin: 0 auto; padding: 4px 22px; min-height: 0; }
+.st-art { position: relative; background: #f7f1e8; border-radius: 18px; aspect-ratio: 400 / 280; max-height: 70vh; box-shadow: 0 24px 60px rgba(0,0,0,.4); overflow: hidden; color: #1c1a19; }
+.st-art > svg { width: 100%; height: 100%; display: block; font-family: "Open Sans", system-ui, sans-serif; }
+.st-kick { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #f3c99f; }
+.st-title { font-family: "Oswald", sans-serif; font-weight: 600; font-size: clamp(28px, 3.6vw, 44px); line-height: 1.08; margin: 6px 0 14px; }
+.st-body { font-size: 17px; line-height: 1.6; color: rgba(255,255,255,.92); }
+.st-body p { margin: 0 0 10px; }
+.st-body .hl { color: #ffd38a; font-weight: 700; }
+.st-body .note { font-size: 14px; color: rgba(255,255,255,.7); }
+.st-chips { margin-top: 6px; }
+.st-chips span { display: inline-block; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 3px 12px; margin: 4px 6px 0 0; font-size: 13px; }
+.st-list { list-style: none; padding: 0; margin: 4px 0 12px; }
+.st-list li { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 10px; }
+.st-list .ic { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px; color: #fff; margin-top: 2px; }
+
+.st-nav { display: flex; justify-content: center; gap: 12px; padding: 14px 22px 8px; }
+.st-nav button { min-width: 132px; height: 46px; border-radius: 999px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; border: 0; }
+.st-nav button:disabled { opacity: .35; cursor: default; }
+.st-back { background: rgba(255,255,255,.12); color: #fff; }
+.st-next { background: #fff; color: #500000; }
+.st-next:focus-visible, .st-back:focus-visible, .st-skip:focus-visible { outline: 3px solid #ffd38a; outline-offset: 2px; }
+.st-hint { text-align: center; font-size: 12px; opacity: .55; padding: 0 0 14px; }
+
+/* overlays inside the art panel */
+.st-box { position: absolute; background: #fff; border-radius: 12px; padding: 10px 14px; box-shadow: 0 6px 20px rgba(0,0,0,.15); font-size: 12.5px; color: #4d4a47; }
+.st-box .n { font-family: "Oswald", sans-serif; font-size: 34px; font-weight: 600; color: #9b2335; line-height: 1.1; }
+.st-box b { color: #1c1a19; }
+.st-legend { left: 12px; top: 12px; display: flex; gap: 12px; align-items: center; }
+.st-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.st-meter { right: 12px; top: 12px; text-align: right; }
+.st-bars { right: 12px; top: 12px; width: min(232px, 58%); }
+.st-bars .r { display: grid; grid-template-columns: 58px 1fr 46px; gap: 8px; align-items: center; margin-top: 6px; }
+.st-bars .tr { height: 12px; background: #efe9df; border-radius: 6px; overflow: hidden; }
+.st-bars .tr div { height: 100%; border-radius: 6px; }
+.st-bars b { text-align: right; }
+
+.st-plan { position: absolute; inset: 0; display: grid; align-content: center; gap: 18px; padding: 22px; }
+.st-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.st-card { background: #fff; border-radius: 12px; padding: 12px; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+.st-card .tag { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+.st-card .what { font-size: 13px; font-weight: 700; color: #1c1a19; }
+.st-card .why { font-size: 12px; color: #77726c; margin-top: 2px; }
+.st-card .cost { font-family: "Oswald", sans-serif; font-size: 24px; color: #1c1a19; margin-top: 4px; }
+.st-bar { display: flex; height: 36px; border-radius: 8px; overflow: hidden; gap: 2px; }
+.st-bar div { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; }
+.st-bar .keep { background: #e4dccf; color: #4d4a47; }
+.st-plan .cap { font-size: 13px; color: #4d4a47; text-align: center; }
+
+/* chooser */
+.st-stage.choose { grid-template-columns: 1fr; text-align: center; align-content: center; }
+.st-stage.choose .st-art { display: none; }
+.st-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 840px; margin: 22px auto 0; text-align: left; }
+.st-choice { background: #fff; color: #1c1a19; border: 0; border-radius: 16px; padding: 22px; cursor: pointer; font: inherit; transition: transform .15s, box-shadow .15s; }
+.st-choice:hover, .st-choice:focus-visible { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.4); outline: 3px solid #ffd38a; }
+.st-choice svg { width: 48px; height: 48px; }
+.st-choice h3 { font-family: "Oswald", sans-serif; font-size: 22px; color: #500000; margin: 10px 0 4px; }
+.st-choice p { margin: 0 0 8px; font-size: 14.5px; color: #4d4a47; }
+.st-choice .ex { font-size: 12.5px; color: #77726c; }
+.st-notsure { background: none; border: 0; color: #fff; text-decoration: underline; margin-top: 18px; cursor: pointer; font: inherit; font-size: 14px; opacity: .85; }
+
+/* animations: base styles are the final state, so "no animation" still looks right */
+.story .pop { animation: st-pop .55s cubic-bezier(.2,.9,.3,1.3) both; transform-box: fill-box; transform-origin: center; }
+@keyframes st-pop { from { opacity: 0; transform: scale(.3); } }
+.story .rise { animation: st-rise .6s ease-out both; }
+@keyframes st-rise { from { opacity: 0; transform: translateY(16px); } }
+.story .slideL { animation: st-slideL .8s ease-out both; }
+@keyframes st-slideL { from { opacity: 0; transform: translateX(-70px); } }
+.story .blink { animation: st-blink 1.1s ease-in-out infinite; }
+@keyframes st-blink { 50% { opacity: .2; } }
+.story .pulse { animation: st-pulse 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes st-pulse { 50% { transform: scale(1.35); opacity: .45; } }
+.story .dim { opacity: .25; animation: st-dim 1.6s ease .5s both; }
+@keyframes st-dim { from { opacity: 1; } }
+.story .dash { stroke-dasharray: 3 2.4; animation: st-dash 0.9s linear infinite; }
+@keyframes st-dash { to { stroke-dashoffset: -10.8; } }
+.story .grow { animation: st-grow .9s ease-out both; transform-origin: left center; }
+@keyframes st-grow { from { transform: scaleX(0); } }
+.story .drip { animation: st-drip 1.4s ease-in infinite; }
+@keyframes st-drip { 0% { transform: translateY(-6px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(12px); opacity: 0; } }
+.st-copy > * { animation: st-rise .5s ease-out both; }
+.st-copy > *:nth-child(2) { animation-delay: .08s; }
+.st-copy > *:nth-child(3) { animation-delay: .16s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .story *, .story *::before, .story *::after { animation: none !important; transition: none !important; }
+}
+@media (max-width: 860px) {
+  .st-stage { grid-template-columns: minmax(0, 1fr); gap: 14px; align-content: start; overflow-y: auto; padding: 0 16px; }
+  .st-top { padding: 12px 16px; } .st-brand { font-size: 14px; }
+  .st-art { aspect-ratio: auto; height: 38vh; }
+  .st-title { font-size: 26px; margin-bottom: 8px; }
+  .st-body { font-size: 15px; }
+  .st-dots { display: none; }
+  .st-cards { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .st-card { padding: 8px; } .st-card .cost { font-size: 18px; } .st-card .why { display: none; }
+  .st-choices { grid-template-columns: 1fr; }
+  .st-box { font-size: 11px; padding: 6px 9px; } .st-box .n { font-size: 24px; }
+  .st-hint { display: none; }
+}
