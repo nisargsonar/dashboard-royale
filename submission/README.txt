@@ -7,7 +7,7 @@ LIVE DASHBOARD (no install needed)
 Claims and Evidence appendix + AI-use disclosure:
   https://nisargsonar.github.io/dashboard-royale/dashboard/appendix.html
 Code: https://github.com/nisargsonar/dashboard-royale
-Video: https://youtu.be/LdU8WF-Utjl
+Video: https://youtu.be/LdU8WF-UtjI
 
 OPEN FROM THIS ZIP
   1. Unzip.
